@@ -4,9 +4,10 @@ using System.Runtime.ConstrainedExecution;
 using System.Windows.Forms;
 
 int n = 100; //depth
-double scale = 0.01;
-Point center = new Point(200, 200);
-Point new_center = new Point(200, 200);
+double scale = 0.01; //smaller number means more zoom
+Point center = new Point(200, 200); //transposes the bitmap to have this point in the center
+Point mouse_down = new (0, 0); //use for dragging the image
+
 Form scherm = new Form();
 scherm.Text = "MandelbrotC";
 scherm.BackColor = Color.White;
@@ -14,7 +15,7 @@ scherm.ClientSize = new Size(400, 400);
 
 Color in_set(double x,double y)
 {
-    x = (x- scherm.ClientSize.Width*0.5 + 1.5*(new_center.X - center.X)) *scale;y= (y- scherm.ClientSize.Height*0.5 + 1.5*(new_center.Y - center.Y)) * scale;
+    x = (x- center.X) *scale; y= (y-center.Y) * scale;
     double a = 0; double b = 0;
     int i = 0;
     while (Math.Sqrt((a - x) * (a - x) + (b - y) * (b - y)) <= 2 && i < n)
@@ -28,26 +29,6 @@ Color in_set(double x,double y)
         return Color.Black;
     else return Color.White;
 }
-void klik(object o, MouseEventArgs e)
-{
-    new_center = e.Location;
-    if (e.Button == MouseButtons.Left)
-        scale = 0.7 * scale;
-    else
-    {
-        scale = 1.4 * scale;
-    }
-    scherm.Invalidate();
-}
-void verander_grootte(object o, EventArgs e)
-{
-    scherm.Invalidate();
-}
-void teken(object o, PaintEventArgs e)
-{
-    e.Graphics.DrawImage(plaatje(),0,0);
-    center.X = scherm.ClientSize.Width/2; center.Y = scherm.ClientSize.Height / 2;
-}
 Bitmap plaatje()
 {
     Bitmap plaatje = new Bitmap(scherm.ClientSize.Width, scherm.ClientSize.Height);
@@ -56,8 +37,47 @@ Bitmap plaatje()
             plaatje.SetPixel((int) i, (int) j,in_set(i,j));
     return plaatje;
 }
+void klik(object o, MouseEventArgs e)
+{
+    center = Point.Subtract(e.Location,new Size(center));
 
+    if (e.Delta > 0)
+    {
+        scale = 0.8 * scale;
+    }
+    else if (e.Delta < 0)
+    {
+        scale = 1.2 * scale;
+    }
+    scherm.Invalidate();
+}
+void mouse_down_drag(object o, MouseEventArgs e)
+{
+    mouse_down = e.Location;
+}
+void mouse_up_drag(object o,MouseEventArgs e)
+{ 
+    if (mouse_down != new Point(0, 0))
+    {
+        center = Point.Subtract(center, (Size)Point.Subtract(mouse_down, (Size)e.Location));
+        mouse_down = new Point(0, 0);
+        scherm.Invalidate();
+    }
+}
+void verander_grootte(object o, EventArgs e)
+{
+    scherm.Invalidate();
+}
+void teken(object o, PaintEventArgs e)
+{
+    
+    e.Graphics.DrawImage(plaatje(),0,0);
+}
+
+
+scherm.MouseWheel += klik;
 scherm.SizeChanged += verander_grootte;
-scherm.MouseClick += klik;  
+scherm.MouseDown += mouse_down_drag;
+scherm.MouseUp += mouse_up_drag;
 scherm.Paint += teken;
 Application.Run(scherm);
