@@ -3,7 +3,7 @@ using System.Drawing;
 using System.Runtime.ConstrainedExecution;
 using System.Windows.Forms;
 
-int n = 100; //depth
+int n = 1000; //depth
 double scale = 0.01; //smaller number means more zoom
 Point center = new Point(200, 200); //transposes the bitmap to have this point in the center
 Point mouse_down = new (0, 0); //use for dragging the image
@@ -18,17 +18,37 @@ Color in_set(double x,double y) //checkt voor elk input punt wat het mandel geta
     x = (x- center.X) *scale; y= (y-center.Y) * scale;
     double a = 0; double b = 0;
     int i = 1;
-    while (Math.Sqrt((a - x) * (a - x) + (b - y) * (b - y)) <= 2 && i < n)
+    while (Math.Sqrt((a - x) * (a - x) + (b - y) * (b - y)) <= 4 && i < n)
     {
         double copy_a = a;
         a = a * a - b * b + x;
         b = 2 * copy_a * b + y;
         i++;
     }
+
+    /*
+    if (i == n)
+        return Color.Black;
+    else    
+        return Color.FromArgb(255,0, 255-255 * i / n);
+    */
+    //return Color.FromArgb(Math.Min(25*i,255),0,255-Math.Min(25*i,255));
+    /*
+    if (i % 2 == 1)
+        return Color.White;
+    for (int j = 2; j<n; j+=2)
+        if (i % j != 0)
+            return Color.FromArgb(255-255*j/n, 0,255-255 * j / n);
+    return Color.FromArgb(0, 255, 0);
+    */
+
+    // z/w WERKT   
     if (i % 2 == 0)
         return Color.Black;
     else return Color.White;
+    //
 }
+
 Bitmap plaatje() //maakt bitmap, gebruikt vorige functie om kleur te bepalen
 {
     Bitmap plaatje = new Bitmap(scherm.ClientSize.Width, scherm.ClientSize.Height);
