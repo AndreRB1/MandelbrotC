@@ -13,11 +13,11 @@ scherm.Text = "MandelbrotC";
 scherm.BackColor = Color.White;
 scherm.ClientSize = new Size(400, 400);
 
-Color in_set(double x,double y)
+Color in_set(double x,double y) //checkt voor elk input punt wat het mandel getal is, en output een kleur
 {
     x = (x- center.X) *scale; y= (y-center.Y) * scale;
     double a = 0; double b = 0;
-    int i = 0;
+    int i = 1;
     while (Math.Sqrt((a - x) * (a - x) + (b - y) * (b - y)) <= 2 && i < n)
     {
         double copy_a = a;
@@ -29,7 +29,7 @@ Color in_set(double x,double y)
         return Color.Black;
     else return Color.White;
 }
-Bitmap plaatje()
+Bitmap plaatje() //maakt bitmap, gebruikt vorige functie om kleur te bepalen
 {
     Bitmap plaatje = new Bitmap(scherm.ClientSize.Width, scherm.ClientSize.Height);
     for (double i = 0; i < scherm.ClientSize.Width; i++)
@@ -37,7 +37,7 @@ Bitmap plaatje()
             plaatje.SetPixel((int) i, (int) j,in_set(i,j));
     return plaatje;
 }
-void klik(object o, MouseEventArgs e)
+void scroll(object o, MouseEventArgs e) //zoom in/uit als je scrollt
 {
     center = Point.Subtract(e.Location,new Size(center));
 
@@ -51,12 +51,12 @@ void klik(object o, MouseEventArgs e)
     }
     scherm.Invalidate();
 }
-void mouse_down_drag(object o, MouseEventArgs e)
+void mouse_down_drag(object o, MouseEventArgs e) //bewaart de locatie waar je klikt
 {
     mouse_down = e.Location;
 }
-void mouse_up_drag(object o,MouseEventArgs e)
-{ 
+void mouse_up_drag(object o,MouseEventArgs e) //verandert center, gebaseert op het verschil
+{ //tussen de locatie waar je klikt en waar je loslaat
     if (mouse_down != new Point(0, 0))
     {
         center = Point.Subtract(center, (Size)Point.Subtract(mouse_down, (Size)e.Location));
@@ -75,7 +75,7 @@ void teken(object o, PaintEventArgs e)
 }
 
 
-scherm.MouseWheel += klik;
+scherm.MouseWheel += scroll;
 scherm.SizeChanged += verander_grootte;
 scherm.MouseDown += mouse_down_drag;
 scherm.MouseUp += mouse_up_drag;
