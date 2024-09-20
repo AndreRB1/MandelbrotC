@@ -19,7 +19,7 @@ Color in_set(double x,double y) //checkt voor elk input punt wat het mandel geta
     x = (x- center.X) *scale; y= (y-center.Y) * scale;
     double a = 0; double b = 0;
     int i = 1;
-    while (Math.Sqrt((a - x) * (a - x) + (b - y) * (b - y)) <= 2 && i < n)
+    while (Math.Sqrt((a - x) * (a - x) + (b - y) * (b - y)) <= 4 && i < n)
     {
         double copy_a = a;
         a = a * a - b * b + x;
@@ -42,6 +42,7 @@ Color in_set(double x,double y) //checkt voor elk input punt wat het mandel geta
     // Focussen op zoom functie, uitgezoomed zinn er simpelweg weinig kleuren te zien.
 
 }
+
 Bitmap plaatje() //maakt bitmap, gebruikt vorige functie om kleur te bepalen
 {
     Bitmap plaatje = new Bitmap(scherm.ClientSize.Width, scherm.ClientSize.Height);
