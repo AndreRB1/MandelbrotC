@@ -3,7 +3,8 @@ using System.Drawing;
 using System.Runtime.ConstrainedExecution;
 using System.Windows.Forms;
 
-int n = 1000; //depth
+
+int n = 100; //depth
 double scale = 0.01; //smaller number means more zoom
 Point center = new Point(200, 200); //transposes the bitmap to have this point in the center
 Point mouse_down = new (0, 0); //use for dragging the image
@@ -26,27 +27,20 @@ Color in_set(double x,double y) //checkt voor elk input punt wat het mandel geta
         i++;
     }
 
-    /*
-    if (i == n)
-        return Color.Black;
-    else    
-        return Color.FromArgb(255,0, 255-255 * i / n);
-    */
-    //return Color.FromArgb(Math.Min(25*i,255),0,255-Math.Min(25*i,255));
-    /*
-    if (i % 2 == 1)
-        return Color.White;
-    for (int j = 2; j<n; j+=2)
-        if (i % j != 0)
-            return Color.FromArgb(255-255*j/n, 0,255-255 * j / n);
-    return Color.FromArgb(0, 255, 0);
-    */
+    int red = Convert.ToInt32(255 * i * 2 / n);
+    if (red > 255) red = 255;
+    int green = Convert.ToInt32(255 * i * 3 / n);
+    if (green > 255) green = 255;
+    int blue =  Convert.ToInt32(255 * i * 4 / n);
+    if (blue > 255) blue = 255;
 
-    // z/w WERKT   
-    if (i % 2 == 0)
-        return Color.Black;
-    else return Color.White;
-    //
+    return Color.FromArgb(255 - red, 255 - green, 255 - blue);
+
+    // Ik heb alle berekeningen buiten FromArgb gebracht. Deze neemt alleen ints dus bijv 255 * 0,7 werkt niet.
+    // De 255, 255, 255 is wit dus ik heb het geinvert. De formules erboven geven altijd een waarde tussen 0 en 255
+    // de kleuren kunnen niet boven 255, dus kan vermenigvuldigd worden voor ander kleurenspectrum.
+    // Focussen op zoom functie, uitgezoomed zinn er simpelweg weinig kleuren te zien.
+
 }
 
 Bitmap plaatje() //maakt bitmap, gebruikt vorige functie om kleur te bepalen
