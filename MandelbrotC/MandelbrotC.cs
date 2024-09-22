@@ -1,6 +1,7 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
+using System.Collections.Generic;
 
 
 int n = 100; //depth
@@ -28,29 +29,38 @@ scale_in.Location = new Point(46, 26); scale_in.Size = new Size(80, 20); scale_i
 knop.Location = new Point(126, 26); knop.Size = new Size(80, 20); knop.Text = "bereken";
 
 
-
+/*reate color palatte
+Color zero = Color.Black;
+Color outer = Color.White;
+List<Color> colors = new List<Color>();
+for (int i = 0; i<= n; i++)
+{   Color colori = Color.FromArgb(Math.Min(zero.R*(1-i/n)+outer.R*(i/n),255), Math.Min(zero.G*(1-i/n)+outer.G*(i/n),255),Math.Min(zero.B*(1-i/n)+outer.B*(i/n),255));
+    colors.Add(colori);
+}
+*/
 Color in_set(double x,double y) //checkt voor elk input punt wat het mandel getal is, en output een kleur
 {
     x = ((x- center.X) *scale); y= ((y-center.Y) *scale);
     double a = 0; double b = 0;
-    int i = 1;
-    while (Math.Sqrt((a - x) * (a - x) + (b - y) * (b - y)) <= 4 && i < n)
+    int i = 0;
+    while (a*a + b*b <= 4 && i < n)
     {
         double copy_a = a;
         a = a * a - b * b + x;
         b = 2 * copy_a * b + y;
         i++;
     }
-
+  //return colors[i];
+    
     int red = Convert.ToInt32(255 * i * 2 / n);
     if (red > 255) red = 255;
     int green = Convert.ToInt32(255 * i * 3 / n);
     if (green > 255) green = 255;
     int blue =  Convert.ToInt32(255 * i * 4 / n);
     if (blue > 255) blue = 255;
-
-    return Color.FromArgb(255 - red, 255 - green, 255 - blue);
-
+    
+    return Color.FromArgb(0, 0,255 - blue);
+    
     // Ik heb alle berekeningen buiten FromArgb gebracht. Deze neemt alleen ints dus bijv 255 * 0,7 werkt niet.
     // De 255, 255, 255 is wit dus ik heb het geinvert. De formules erboven geven altijd een waarde tussen 0 en 255
     // de kleuren kunnen niet boven 255, dus kan vermenigvuldigd worden voor ander kleurenspectrum.
@@ -98,6 +108,7 @@ void verander_grootte(object o, EventArgs e)
 }
 void teken(object o, PaintEventArgs e)
 {
+    scale_in.Text = scale.ToString();
     center_x.Text = center.X.ToString();
     center_y.Text = center.Y.ToString();
     e.Graphics.DrawImage(plaatje(),0,52);
