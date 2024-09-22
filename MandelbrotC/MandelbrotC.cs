@@ -4,7 +4,7 @@ using System.Windows.Forms;
 using System.Collections.Generic;
 
 
-int n = 100; //depth
+double n = 100; //depth
 double scale = 0.01; //smaller number means more zoom
 Point center = new Point(300, 200); //transposes the bitmap to have this point in the center
 Point mouse_down = new (0, 0); //use for dragging the image
@@ -29,15 +29,16 @@ scale_in.Location = new Point(46, 26); scale_in.Size = new Size(80, 20); scale_i
 knop.Location = new Point(126, 26); knop.Size = new Size(80, 20); knop.Text = "bereken";
 
 
-/*reate color palatte
+//create color palatte
 Color zero = Color.Black;
-Color outer = Color.White;
+Color outer = Color.Yellow;
 List<Color> colors = new List<Color>();
-for (int i = 0; i<= n; i++)
-{   Color colori = Color.FromArgb(Math.Min(zero.R*(1-i/n)+outer.R*(i/n),255), Math.Min(zero.G*(1-i/n)+outer.G*(i/n),255),Math.Min(zero.B*(1-i/n)+outer.B*(i/n),255));
+for (double i = 0; i<= n; i++)
+{
+    Color colori = Color.FromArgb((byte)(zero.R * (i / n) + outer.R * (1 - i / n)), (byte)(zero.G * (i / n) + outer.G * (1 - i / n)), (byte)(zero.B * (i / n) + outer.B * (1 - i / n)));
     colors.Add(colori);
 }
-*/
+
 Color in_set(double x,double y) //checkt voor elk input punt wat het mandel getal is, en output een kleur
 {
     x = ((x- center.X) *scale); y= ((y-center.Y) *scale);
@@ -50,8 +51,8 @@ Color in_set(double x,double y) //checkt voor elk input punt wat het mandel geta
         b = 2 * copy_a * b + y;
         i++;
     }
-  //return colors[i];
-    
+    return colors[i];
+    /*
     int red = Convert.ToInt32(255 * i * 2 / n);
     if (red > 255) red = 255;
     int green = Convert.ToInt32(255 * i * 3 / n);
@@ -60,7 +61,7 @@ Color in_set(double x,double y) //checkt voor elk input punt wat het mandel geta
     if (blue > 255) blue = 255;
     
     return Color.FromArgb(0, 0,255 - blue);
-    
+    */
     // Ik heb alle berekeningen buiten FromArgb gebracht. Deze neemt alleen ints dus bijv 255 * 0,7 werkt niet.
     // De 255, 255, 255 is wit dus ik heb het geinvert. De formules erboven geven altijd een waarde tussen 0 en 255
     // de kleuren kunnen niet boven 255, dus kan vermenigvuldigd worden voor ander kleurenspectrum.
@@ -70,7 +71,7 @@ Color in_set(double x,double y) //checkt voor elk input punt wat het mandel geta
 
 Bitmap plaatje() //maakt bitmap, gebruikt vorige functie om kleur te bepalen
 {
-    Bitmap plaatje = new Bitmap(scherm.ClientSize.Width, scherm.ClientSize.Height-40);
+    Bitmap plaatje = new Bitmap(scherm.ClientSize.Width, scherm.ClientSize.Height-52);
     for (double i = 0; i < scherm.ClientSize.Width; i++)
         for (double j = 0; j < scherm.ClientSize.Height-52; j++)
             plaatje.SetPixel((int) i, (int) j,in_set(i,j));
@@ -91,7 +92,8 @@ void scroll(object o, MouseEventArgs e) //zoom in/uit als je scrollt
 }
 void mouse_down_drag(object o, MouseEventArgs e) //bewaart de locatie waar je klikt
 {
-    mouse_down = e.Location;
+    if (e.Location.Y>52)
+        mouse_down = e.Location;
 }
 void mouse_up_drag(object o,MouseEventArgs e) //verandert center, gebaseert op het verschil
 { //tussen de locatie waar je klikt en waar je loslaat
@@ -127,7 +129,6 @@ void bereken(object o, EventArgs e)
     }
 
 }
-
 knop.Click += bereken;
 scherm.MouseWheel += scroll;
 scherm.SizeChanged += verander_grootte;
