@@ -1,75 +1,99 @@
 using System;
 using System.Drawing;
-using System.Runtime.ConstrainedExecution;
 using System.Windows.Forms;
+using System.Collections.Generic;
 
-int n = 100; //depth
+
+double n = 100; //depth
 double scale = 0.01; //smaller number means more zoom
-Point center = new Point(200, 200); //transposes the bitmap to have this point in the center
+Point center = new Point(300, 200); //transposes the bitmap to have this point in the center
 Point mouse_down = new (0, 0); //use for dragging the image
 bool mouse_down_bool = false;
 
 Form scherm = new Form();
 scherm.Text = "MandelbrotC";
 scherm.BackColor = Color.White;
-scherm.ClientSize = new Size(400, 400);
+scherm.ClientSize = new Size(600, 400);
+Label labx = new Label(); Label laby = new Label();Label labscale = new Label();
+TextBox center_x = new TextBox(); 
+TextBox center_y = new TextBox();
+TextBox scale_in = new TextBox();
+Button knop = new Button();
+scherm.Controls.Add(labx);scherm.Controls.Add(laby);scherm.Controls.Add(labscale);
+scherm.Controls.Add(center_x);scherm.Controls.Add(center_y);scherm.Controls.Add(scale_in);scherm.Controls.Add(knop);
+labx.Location = new Point(6, 6); labx.Size = new Size(30, 30); labx.Text = "x:";
+center_x.Location = new Point(46, 6);center_x.Size = new Size(45, 20); center_x.Text = "300";
+laby.Location = new Point(91, 6); laby.Size = new Size(30, 20); laby.Text = "y:";
+center_y.Location = new Point(126, 6);center_y.Size = new Size(45, 20); center_y.Text = "200";
+labscale.Location = new Point(6, 30); labscale.Size = new Size(41, 20); labscale.Text = "schaal:";
+scale_in.Location = new Point(46, 26); scale_in.Size = new Size(80, 20); scale_in.Text = "0.01";
+knop.Location = new Point(126, 26); knop.Size = new Size(80, 20); knop.Text = "bereken";
+
+
+//create color palatte
+Color zero = Color.Black;
+Color outer = Color.Yellow;
+List<Color> colors = new List<Color>();
+for (double i = 0; i<= n; i++)
+{
+    Color colori = Color.FromArgb((byte)(zero.R * (i / n) + outer.R * (1 - i / n)), (byte)(zero.G * (i / n) + outer.G * (1 - i / n)), (byte)(zero.B * (i / n) + outer.B * (1 - i / n)));
+    colors.Add(colori);
+}
+
 Color in_set(double x,double y) //checkt voor elk input punt wat het mandel getal is, en output een kleur
 {
-    x = (x- center.X) *scale; y= (y-center.Y) * scale;
+    x = ((x- center.X) *scale); y= ((y-center.Y) *scale);
     double a = 0; double b = 0;
-    int i = 1;
-    while (Math.Sqrt((a - x) * (a - x) + (b - y) * (b - y)) <= 10 && i < n)
-    {   double copy_a = a;
+    int i = 0;
+    while (a*a + b*b <= 4 && i < n)
+    {
+        double copy_a = a;
         a = a * a - b * b + x;
         b = 2 * copy_a * b + y;
         i++;
     }
+    return colors[i];
     /*
-    if (i == n)
-        return Color.Black;
-    else    
-        return Color.FromArgb(255,0, 255-255 * i / n);
+    int red = Convert.ToInt32(255 * i * 2 / n);
+    if (red > 255) red = 255;
+    int green = Convert.ToInt32(255 * i * 3 / n);
+    if (green > 255) green = 255;
+    int blue =  Convert.ToInt32(255 * i * 4 / n);
+    if (blue > 255) blue = 255;
+    
+    return Color.FromArgb(0, 0,255 - blue);
     */
-    //return Color.FromArgb(Math.Min(25*i,255),0,255-Math.Min(25*i,255));
-    /*
-    if (i % 2 == 1)
-        return Color.White;
-    for (int j = 2; j<n; j+=2)
-        if (i % j != 0)
-            return Color.FromArgb(255-255*j/n, 0,255-255 * j / n);
-    return Color.FromArgb(0, 255, 0);
-    //*/
-    // z/w WERKT   
-    if (i % 2 == 0)
-        return Color.Black;
-    else return Color.White;
-    //*/
+    // Ik heb alle berekeningen buiten FromArgb gebracht. Deze neemt alleen ints dus bijv 255 * 0,7 werkt niet.
+    // De 255, 255, 255 is wit dus ik heb het geinvert. De formules erboven geven altijd een waarde tussen 0 en 255
+    // de kleuren kunnen niet boven 255, dus kan vermenigvuldigd worden voor ander kleurenspectrum.
+    // Focussen op zoom functie, uitgezoomed zinn er simpelweg weinig kleuren te zien.
+
 }
 Bitmap plaatje() //maakt bitmap, gebruikt vorige functie om kleur te bepalen
 {
-    Bitmap plaatje = new Bitmap(scherm.ClientSize.Width, scherm.ClientSize.Height);
+    Bitmap plaatje = new Bitmap(scherm.ClientSize.Width, scherm.ClientSize.Height-52);
     for (double i = 0; i < scherm.ClientSize.Width; i++)
-        for (double j = 0; j < scherm.ClientSize.Height; j++)
+        for (double j = 0; j < scherm.ClientSize.Height-52; j++)
             plaatje.SetPixel((int) i, (int) j,in_set(i,j));
     return plaatje;
 }
 void scroll(object o, MouseEventArgs e) //zoom in/uit als je scrollt
 {
-    center = Point.Subtract(e.Location,new Size(center)); //zou moeten inzoomen op cursor, werkt niet
-
+    center = Point.Subtract(center,new Size(Point.Subtract(e.Location,new Size(center))));
     if (e.Delta > 0)
     {
-        scale = 0.8 * scale;
+        scale *=0.7;
     }
     else if (e.Delta < 0)
     {
-        scale = 1.2 * scale;
+        scale *= 1.3;
     }
     scherm.Invalidate();
 }
 void mouse_down_drag(object o, MouseEventArgs e) //bewaart de locatie waar je klikt
-{   mouse_down_bool = true;
-    mouse_down = e.Location;
+{
+    if (e.Location.Y>52)
+        mouse_down = e.Location;
 }
 void mouse_up_drag(object o,MouseEventArgs e) //verandert center, gebaseert op het verschil
 { //tussen de locatie waar je klikt en waar je loslaat
@@ -86,9 +110,26 @@ void verander_grootte(object o, EventArgs e)
 }
 void teken(object o, PaintEventArgs e)
 {
-    
-    e.Graphics.DrawImage(plaatje(),0,0);
+    scale_in.Text = scale.ToString();
+    center_x.Text = center.X.ToString();
+    center_y.Text = center.Y.ToString();
+    e.Graphics.DrawImage(plaatje(),0,52);
 }
+void bereken(object o, EventArgs e)
+{
+    try
+    {
+        center = new Point(int.Parse(center_x.Text), int.Parse(center_y.Text));
+        scale = double.Parse(scale_in.Text);
+        scherm.Invalidate();
+    }
+    catch (Exception ex)
+    {
+        DialogResult result = MessageBox.Show(ex.Message, "Er is iets fout gegaan.",  MessageBoxButtons.OK);
+    }
+
+}
+knop.Click += bereken;
 scherm.MouseWheel += scroll;
 scherm.SizeChanged += verander_grootte;
 scherm.MouseDown += mouse_down_drag;
