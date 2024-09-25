@@ -81,7 +81,7 @@ List<Color> gen_palette(Color zero, Color outer)//create color palatte
     List<Color> colors = new List<Color>();
     for (double i = 0; i <= n; i++)
     {
-        // gradient from color zero to color outer
+        // gradient from color zero to color outer with n steps
         byte r = (byte)(zero.R * (i / n) + outer.R * (1 - i / n));
         byte g = (byte)(zero.G * (i / n) + outer.G * (1 - i / n));
         byte b = (byte)(zero.B * (i / n) + outer.B * (1 - i / n));
