@@ -3,7 +3,6 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.Collections.Generic;
 
-
 double n = 100; //depth
 double scale = 0.01; //smaller number means more zoom
 Point center = new Point(300, 200); //transposes the bitmap to have this point in the center
@@ -135,14 +134,18 @@ Bitmap plaatje() //maakt bitmap, gebruikt vorige functie om kleur te bepalen
 }
 void scroll(object o, MouseEventArgs e) //zoom in/uit als je scrollt
 {
-    center = Point.Subtract(center,new Size(Point.Subtract(e.Location,new Size(center))));
+    center = Point.Subtract(center, new Size(Point.Subtract(e.Location, new Size(center))));
     if (e.Delta > 0)
     {
         scale *=0.7;
+        center.X = (int)(center.X * 0.7); 
+        center.Y = (int)(center.Y * 0.7);
     }
-    else if (e.Delta < 0)
+    else
     {
         scale *= 1.3;
+        center.X = (int)(center.X * 1.3);
+        center.Y = (int)(center.Y * 1.3);
     }
     scherm.Invalidate();
 }
@@ -169,9 +172,9 @@ void verander_grootte(object o, EventArgs e)
 }
 void teken(object o, PaintEventArgs e)
 {
-    scale_in.Text = scale.ToString();
-    center_x.Text = center.X.ToString();
-    center_y.Text = center.Y.ToString();
+    scale_in.Text = scale.ToString("E");
+    center_x.Text = ((0.5 * scherm.Width - center.X) * scale).ToString("F4");
+    center_y.Text = ((0.5 * (scherm.Height-52) - center.Y) * scale).ToString("F4");
     e.Graphics.DrawImage(plaatje(),0,52);
 }
 void bereken(object o, EventArgs e)
@@ -180,6 +183,7 @@ void bereken(object o, EventArgs e)
     {
         center = new Point(int.Parse(center_x.Text), int.Parse(center_y.Text));
         scale = double.Parse(scale_in.Text);
+        center = new Point((int)(0.5 * scherm.Width - double.Parse(center_x.Text)/scale),(int)(0.5 * (scherm.Height - 52) - double.Parse(center_y.Text)/scale));
         scherm.Invalidate();
     }
     catch (Exception ex)
