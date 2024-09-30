@@ -111,6 +111,43 @@ void GenControls()
     return colors;
 } */
 
+List<Color> ColorPalette()
+{
+    double pi = Math.PI;
+    double k, l, m;
+    
+    k = MandelNum() / n * 255;
+    l = Math.Sin(pi * (MandelNum() / n));  // could add ...  + (pi * colorscale from 0 to 1)
+    m = Math.Cos(pi * (MandelNum() / n));  // same as above
+    int r, g, b;
+    r = Convert.ToInt32(k);
+    g = Convert.ToInt32(l);
+    b = Convert.ToInt32(m);
+
+    Color Palette = new Color();
+    Palette = Color.FromArgb(r, g, b);
+    // dit is vgm niet eens een lijst, zorgt als het goed is voor mooie variate kleuren, 2 ervan zouden aanpasbaar zijn met slider. 
+    // MandelNum 
+}
+
+/*
+ * 
+ * If (i < n * 0,1) // black to red
+ *      Color.FromArgb(0, 0, 255 * (i / n))
+ * 
+ * else if ( i < n * 0,2) red to yellow
+ *      Color.FromArgb(255 * (i / n), 255 * (i / n), 255 - 255 * (i / n))
+ * 
+ * else if (i < n * 0,3
+ *      etc
+ * 
+ * etc
+ * 
+ */
+
+
+
+
 double MandelNum(double x,double y) //checkt voor elk input punt wat het mandel getal is
 {
     x = ((x- center.X) *scale); y= ((y-center.Y) *scale);
@@ -150,13 +187,13 @@ void scroll(object o, MouseEventArgs e) //zoom in/uit als je scrollt
     center = Point.Subtract(center, new Size(Point.Subtract(e.Location, new Size(center))));
     if (e.Delta > 0)
     {
-        scale *=0.7;
+        scale *=0.9;
         center.X = (int)(center.X * 0.7); 
         center.Y = (int)(center.Y * 0.7);
     }
     else
     {
-        scale *= 1.3;
+        scale *= 1.1;
         center.X = (int)(center.X * 1.3);
         center.Y = (int)(center.Y * 1.3);
     }
