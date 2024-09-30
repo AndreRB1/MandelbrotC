@@ -32,7 +32,7 @@ Button outercolor = new Button();
 
 Color inrclr = Color.Black;
 Color outrclr = Color.White;
-// List<Color> colors = gen_palette(inrclr, outrclr);
+//List<Color> colors = gen_palette(Color.Black, Color.Blue);
 
 
 GenControls();
@@ -110,10 +110,10 @@ void GenControls()
 }
 
 
-/* List<Color> gen_palette(Color zero, Color outer)//create color palatte
+List<Color> gen_palette(Color zero, Color outer)//create color palatte
 {
     List<Color> colors = new List<Color>();
-    for (double i = 0; i <= n; i++)
+    for (double i = 0; i <= 100; i++)
     {   // gradient from color zero to color outer with n steps
         byte r = (byte)(zero.R * (i / n) + outer.R * (1 - i / n));
         byte g = (byte)(zero.G * (i / n) + outer.G * (1 - i / n));
@@ -122,22 +122,7 @@ void GenControls()
         colors.Add(colori);
     }
     return colors;
-} */
-/*
- * 
- * If (i < n * 0,1) // black to red
- *      Color.FromArgb(0, 0, 255 * (i / n))
- * 
- * else if ( i < n * 0,2) red to yellow
- *      Color.FromArgb(255 * (i / n), 255 * (i / n), 255 - 255 * (i / n))
- * 
- * else if (i < n * 0,3
- *      etc
- * 
- * etc
- * 
- */
-
+} 
 
 
 
@@ -166,29 +151,18 @@ Color MandelNum(double x,double y) //checkt voor elk input punt wat het mandel g
         l = t;
     }
     
-    
     double o = inrclr.R * (1 - m / n) + outrclr.R * (m / n);
     double p = inrclr.G * (1 - m / n) + outrclr.G * (m / n);
     double q = inrclr.B * (1 - m / n) + outrclr.B * (m / n);
     for (int j = 0; j < 100;j++)
     {
-        if (m < ())
+        if (m < (n * (j / 100)))
+        {
+            o *= j / 100;
+            p *= j / 100;
+            q *= j / 100;
+        }
     }
-    if (m < (n * 0.3))
-    {
-        o *= 0.3;
-        p *= 0.3;
-        q *= 0.3;
-    }
-    else if (m < n * 0.6) 
-    {
-        o *= 0.6;
-        p *= 0.6;
-        q *= 0.6;
-    }
-
-
-
     return Color.FromArgb((byte) o, (byte) p, (byte) q);
 }
 
@@ -209,14 +183,14 @@ void scroll(object o, MouseEventArgs e) //zoom in/uit als je scrollt
     if (e.Delta > 0)
     {
         scale *=0.9;
-        center.X = (int)(center.X * 0.7); 
-        center.Y = (int)(center.Y * 0.7);
+        center.X = (int)(center.X * 0.9); 
+        center.Y = (int)(center.Y * 0.9);
     }
     else
     {
         scale *= 1.1;
-        center.X = (int)(center.X * 1.3);
-        center.Y = (int)(center.Y * 1.3);
+        center.X = (int)(center.X * 1.1);
+        center.Y = (int)(center.Y * 1.1);
     }
     scherm.Invalidate();
 }
