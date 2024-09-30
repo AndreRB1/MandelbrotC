@@ -2,6 +2,7 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Collections.Generic;
+using System.DirectoryServices.ActiveDirectory;
 
 double n = 100; //depth
 
@@ -20,9 +21,11 @@ Label laby = new Label();
 Label labscale = new Label();
 Label labInnerColor = new Label();
 Label labOuterColor = new Label();
+Label LabDepth = new Label();
 TextBox center_x = new TextBox();
 TextBox center_y = new TextBox();
 TextBox scale_in = new TextBox();
+TextBox depth = new TextBox();
 Button knop = new Button();
 Button innercolor = new Button();
 Button outercolor = new Button();
@@ -60,6 +63,11 @@ void GenControls()
     labOuterColor.Location = new Point(286, 26);
     labOuterColor.Size = new Size(20, 20);
     labOuterColor.BackColor = outrclr;
+    //label for depth
+    scherm.Controls.Add(LabDepth);
+    LabDepth.Location = new Point(306, 6);
+    LabDepth.Size = new Size(41, 20);
+    LabDepth.Text = "depth:";
 
     //***TEXTBOXES***
     //textbox for x coord
@@ -77,6 +85,11 @@ void GenControls()
     scale_in.Location = new Point(46, 26);
     scale_in.Size = new Size(80, 20);
     scale_in.Text = "0.01";
+    //textbox for max depth
+    scherm.Controls.Add(depth);
+    depth.Location = new Point(347, 6);
+    depth.Size = new Size(60, 20);
+    depth.Text = $"{n}";
 
  //***BUTTONS***
     //button for calculating with given input
@@ -110,26 +123,6 @@ void GenControls()
     }
     return colors;
 } */
-
-List<Color> ColorPalette()
-{
-    double pi = Math.PI;
-    double k, l, m;
-    
-    k = MandelNum() / n * 255;
-    l = Math.Sin(pi * (MandelNum() / n));  // could add ...  + (pi * colorscale from 0 to 1)
-    m = Math.Cos(pi * (MandelNum() / n));  // same as above
-    int r, g, b;
-    r = Convert.ToInt32(k);
-    g = Convert.ToInt32(l);
-    b = Convert.ToInt32(m);
-
-    Color Palette = new Color();
-    Palette = Color.FromArgb(r, g, b);
-    // dit is vgm niet eens een lijst, zorgt als het goed is voor mooie variate kleuren, 2 ervan zouden aanpasbaar zijn met slider. 
-    // MandelNum 
-}
-
 /*
  * 
  * If (i < n * 0,1) // black to red
@@ -148,13 +141,14 @@ List<Color> ColorPalette()
 
 
 
-double MandelNum(double x,double y) //checkt voor elk input punt wat het mandel getal is
+Color MandelNum(double x,double y) //checkt voor elk input punt wat het mandel getal is
 {
     x = ((x- center.X) *scale); y= ((y-center.Y) *scale);
     double a = 0; double b = 0;
     double a_sq = 0; double b_sq = 0; double ab_sq = 0; //using variables for the squares of a, b and (a+b) uses less multiplications per loop cycle
     double i = 0;
     double l = 0, t = 0;
+    double m = 0;
     while (t <= 4 && i < n)
     {
         a = a_sq - b_sq + x;
@@ -164,11 +158,38 @@ double MandelNum(double x,double y) //checkt voor elk input punt wat het mandel 
         b_sq = b * b;
         t = (a_sq + b_sq);
         i++;
-        if (t <= 4)
-            return i + ((4.0 - l) / (t - l));
+        if (t >= 4)
+        {
+            m = i + ((4.0 - l) / (t - l));
+            break;
+        }
         l = t;
     }
-    return -1;
+    
+    
+    double o = inrclr.R * (1 - m / n) + outrclr.R * (m / n);
+    double p = inrclr.G * (1 - m / n) + outrclr.G * (m / n);
+    double q = inrclr.B * (1 - m / n) + outrclr.B * (m / n);
+    for (int j = 0; j < 100;j++)
+    {
+        if (m < ())
+    }
+    if (m < (n * 0.3))
+    {
+        o *= 0.3;
+        p *= 0.3;
+        q *= 0.3;
+    }
+    else if (m < n * 0.6) 
+    {
+        o *= 0.6;
+        p *= 0.6;
+        q *= 0.6;
+    }
+
+
+
+    return Color.FromArgb((byte) o, (byte) p, (byte) q);
 }
 
 
@@ -177,7 +198,7 @@ Bitmap plaatje() //maakt bitmap
     Bitmap plaatje = new Bitmap(scherm.ClientSize.Width, scherm.ClientSize.Height-52);
     for (double i = 0; i < scherm.ClientSize.Width; i++)
         for (double j = 0; j < scherm.ClientSize.Height-52; j++)
-            plaatje.SetPixel((int) i, (int)j, colors[MandelNum(i,j)]);
+            plaatje.SetPixel((int) i, (int)j, MandelNum(i,j));
     return plaatje;
 }
 
@@ -224,6 +245,7 @@ void mouse_up_drag(object o,MouseEventArgs e)   //verandert center, gebaseert op
 
 void teken(object o, PaintEventArgs e)
 {
+    depth.Text = n.ToString();
     scale_in.Text = scale.ToString("E");
     center_x.Text = ((0.5 * scherm.Width - center.X) * scale).ToString("F4");
     center_y.Text = ((0.5 * (scherm.Height-52) - center.Y) * scale).ToString("F4");
@@ -234,7 +256,8 @@ void teken(object o, PaintEventArgs e)
 void bereken(object o, EventArgs e)
 {
     try
-    {        
+    {
+        n = double.Parse(depth.Text);
         scale = double.Parse(scale_in.Text);
         center = new Point((int)(0.5 * scherm.Width - double.Parse(center_x.Text)/scale),(int)(0.5 * (scherm.Height - 52) - double.Parse(center_y.Text)/scale));
         scherm.Invalidate();
@@ -246,7 +269,7 @@ void bereken(object o, EventArgs e)
 }
 
 
-/* void verander_kleur(object o, EventArgs e)
+void verander_kleur(object o, EventArgs e)
 {
     ColorDialog dlg = new ColorDialog();
     dlg.ShowDialog();
@@ -260,13 +283,13 @@ void bereken(object o, EventArgs e)
         outrclr = dlg.Color;
         labOuterColor.BackColor = outrclr;
     }
-    colors = gen_palette(inrclr, outrclr);
+    //colors = gen_palette(inrclr, outrclr);
     scherm.Invalidate();
 }
-*/
 
-//innercolor.Click += verander_kleur;
-//outercolor.Click += verander_kleur;
+
+innercolor.Click += verander_kleur;
+outercolor.Click += verander_kleur;
 knop.Click += bereken;
 scherm.MouseWheel += scroll;
 scherm.MouseDown += mouse_down_drag;
