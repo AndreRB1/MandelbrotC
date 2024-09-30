@@ -29,7 +29,8 @@ Button outercolor = new Button();
 
 Color inrclr = Color.Black;
 Color outrclr = Color.White;
-List<Color> colors = gen_palette(inrclr, outrclr);
+// List<Color> colors = gen_palette(inrclr, outrclr);
+
 
 GenControls();
 void GenControls()
@@ -94,7 +95,9 @@ void GenControls()
     outercolor.Size = new Size(80, 20);
     outercolor.Text = "kleur 2";
 }
-List<Color> gen_palette(Color zero, Color outer)//create color palatte
+
+
+/* List<Color> gen_palette(Color zero, Color outer)//create color palatte
 {
     List<Color> colors = new List<Color>();
     for (double i = 0; i <= n; i++)
@@ -106,24 +109,32 @@ List<Color> gen_palette(Color zero, Color outer)//create color palatte
         colors.Add(colori);
     }
     return colors;
-}
-int MandelNum(double x,double y) //checkt voor elk input punt wat het mandel getal is
+} */
+
+double MandelNum(double x,double y) //checkt voor elk input punt wat het mandel getal is
 {
     x = ((x- center.X) *scale); y= ((y-center.Y) *scale);
     double a = 0; double b = 0;
     double a_sq = 0; double b_sq = 0; double ab_sq = 0; //using variables for the squares of a, b and (a+b) uses less multiplications per loop cycle
-    int i = 0;
-    while (a_sq + b_sq <= 4 && i < n)
+    double i = 0;
+    double l = 0, t = 0;
+    while (t <= 4 && i < n)
     {
-        ab_sq = (a + b) * (a + b);
-        a_sq = a * a; 
-        b_sq = b*b;
         a = a_sq - b_sq + x;
         b = ab_sq - a_sq- b_sq + y;//(a+b)^2-a^2-b^2 = 2ab
+        ab_sq = (a + b) * (a + b);
+        a_sq = a * a;
+        b_sq = b * b;
+        t = (a_sq + b_sq);
         i++;
+        if (t <= 4)
+            return i + ((4.0 - l) / (t - l));
+        l = t;
     }
-    return i;
+    return -1;
 }
+
+
 Bitmap plaatje() //maakt bitmap
 {
     Bitmap plaatje = new Bitmap(scherm.ClientSize.Width, scherm.ClientSize.Height-52);
@@ -132,6 +143,8 @@ Bitmap plaatje() //maakt bitmap
             plaatje.SetPixel((int) i, (int)j, colors[MandelNum(i,j)]);
     return plaatje;
 }
+
+
 void scroll(object o, MouseEventArgs e) //zoom in/uit als je scrollt
 {
     center = Point.Subtract(center, new Size(Point.Subtract(e.Location, new Size(center))));
@@ -149,6 +162,8 @@ void scroll(object o, MouseEventArgs e) //zoom in/uit als je scrollt
     }
     scherm.Invalidate();
 }
+
+
 void mouse_down_drag(object o, MouseEventArgs e) //bewaart de locatie waar je klikt
 {
     if (e.Location.Y > 52)
@@ -157,6 +172,8 @@ void mouse_down_drag(object o, MouseEventArgs e) //bewaart de locatie waar je kl
         mouse_down_bool = true;
     }
 }
+
+
 void mouse_up_drag(object o,MouseEventArgs e)   //verandert center, gebaseert op het verschil
 {                                               //tussen de locatie waar je klikt en waar je loslaat
     if (mouse_down_bool)
@@ -166,10 +183,8 @@ void mouse_up_drag(object o,MouseEventArgs e)   //verandert center, gebaseert op
         scherm.Invalidate();
     }
 }
-void verander_grootte(object o, EventArgs e)
-{
-    scherm.Invalidate();
-}
+
+
 void teken(object o, PaintEventArgs e)
 {
     scale_in.Text = scale.ToString("E");
@@ -177,6 +192,8 @@ void teken(object o, PaintEventArgs e)
     center_y.Text = ((0.5 * (scherm.Height-52) - center.Y) * scale).ToString("F4");
     e.Graphics.DrawImage(plaatje(),0,52);
 }
+
+
 void bereken(object o, EventArgs e)
 {
     try
@@ -190,7 +207,9 @@ void bereken(object o, EventArgs e)
         DialogResult result = MessageBox.Show(ex.Message, "Er is iets fout gegaan.",  MessageBoxButtons.OK);
     }
 }
-void verander_kleur(object o, EventArgs e)
+
+
+/* void verander_kleur(object o, EventArgs e)
 {
     ColorDialog dlg = new ColorDialog();
     dlg.ShowDialog();
@@ -207,12 +226,16 @@ void verander_kleur(object o, EventArgs e)
     colors = gen_palette(inrclr, outrclr);
     scherm.Invalidate();
 }
-innercolor.Click += verander_kleur;
-outercolor.Click += verander_kleur;
+*/
+
+//innercolor.Click += verander_kleur;
+//outercolor.Click += verander_kleur;
 knop.Click += bereken;
 scherm.MouseWheel += scroll;
-scherm.SizeChanged += verander_grootte;
 scherm.MouseDown += mouse_down_drag;
 scherm.MouseUp += mouse_up_drag;
 scherm.Paint += teken;
 Application.Run(scherm);
+
+
+
