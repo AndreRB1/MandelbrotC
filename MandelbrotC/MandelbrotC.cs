@@ -5,11 +5,13 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.Collections.Generic;
 using System.DirectoryServices.ActiveDirectory;
-using System.ComponentModel.DataAnnotations;
+using System.Numerics;
 
-double n = 100; //depth
+
+double n = 1000; //depth
+
 double scale = 0.01; //smaller number means more zoom
-Point center = new Point(300, 200); //transposes the bitmap to have this point in the center
+Point center = new Point(300, 174); //transposes the bitmap to have this point in the center
 Point mouse_down = new (0, 0); //use for dragging the image
 bool mouse_down_bool = false;
 bool Cobool = true;
@@ -185,7 +187,7 @@ int MandelNum(double x, double y) //checkt voor elk input punt wat het mandel ge
 
 Color SmoothClr(double x,double y) //geeft smooth kleuren
 {
-    x = ((x- center.X) *scale); y= ((y-center.Y) *scale);
+    x = ((x- center.X) * scale); y= ((y-center.Y) * scale);
     double a = 0; double b = 0;
     double a_sq = 0; double b_sq = 0; double ab_sq = 0; //using variables for the squares of a, b and (a+b) uses less multiplications per loop cycle
     double i = 0;
@@ -211,6 +213,24 @@ Color SmoothClr(double x,double y) //geeft smooth kleuren
     double o = inrclr.R * (1 - m / n) + outrclr.R * (m / n);
     double p = inrclr.G * (1 - m / n) + outrclr.G * (m / n);
     double q = inrclr.B * (1 - m / n) + outrclr.B * (m / n);
+    /*for (int j = 0; j < 100;j++)
+    {
+        if (m < ()) ;
+    }
+    if (m < (n * 0.3))
+    {
+        o *= 0.3;
+        p *= 0.3;
+        q *= 0.3;
+    }
+    else if (m < n * 0.6) 
+    {
+        o *= 0.6;
+        p *= 0.6;
+        q *= 0.6;
+    }
+
+    */
 
     return Color.FromArgb((byte) o, (byte) p, (byte) q);
 }
@@ -236,21 +256,32 @@ Bitmap plaatje() //maakt bitmap
 }
 
 
-void scroll(object o, MouseEventArgs e) //zoom in/uit als je scrollt
+
+void zoom(object o, MouseEventArgs e) //zoom in/uit als je scrollt
 {
-    center = Point.Subtract(center, new Size(Point.Subtract(e.Location, new Size(center))));
-    if (e.Delta < 0)
+    double dmoveX = 0;
+    double dmoveY = 0;
+    int moveX;
+    int moveY;
+    
+
+    if (e.Delta > 0)
     {
-        scale *=0.7;
-        center.X = (int)(center.X * 0.7); 
-        center.Y = (int)(center.Y * 0.7);
+        scale *= 0.5;
+        dmoveX = center.X - (e.Location.X - center.X);
+        dmoveY = center.Y - (e.Location.Y - 52 - center.Y);
     }
     else
     {
-        scale *= 1.3;
-        center.X = (int)(center.X * 1.3);
-        center.Y = (int)(center.Y * 1.3);
+        scale *= 2.0;
+        dmoveX = center.X - (center.X - e.Location.X) * 0.5;
+        dmoveY = center.Y - (center.Y - e.Location.Y +52) * 0.5;
     }
+
+    moveX = Convert.ToInt32(dmoveX);
+    moveY = Convert.ToInt32(dmoveY);
+    center = new Point(moveX, moveY);
+
     scherm.Invalidate();
 }
 
@@ -384,7 +415,7 @@ smoothening.CheckedChanged += redraw;
 innercolor.Click += verander_kleur;
 outercolor.Click += verander_kleur;
 knop.Click += bereken;
-scherm.MouseWheel += scroll;
+scherm.MouseWheel += zoom;
 scherm.MouseDown += mouse_down_drag;
 scherm.MouseUp += mouse_up_drag;
 scherm.Paint += teken;
