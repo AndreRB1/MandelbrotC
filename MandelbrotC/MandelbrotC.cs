@@ -351,35 +351,97 @@ void ChangeColor(object o, EventArgs e)
     }
     else if (o == br3)
     {
-        s23 = !s23;
-        s24 = !s24;
+        s31 = !s31;
+        s32 = !s32;
     }
     else if (o == br4)
     {
-
+        s41 = !s41;
+        s42 = !s42;
     }
     else if (o == br5)
     {
-
+        s51 = !s51;
+        s52 = !s52;
     }
     else if (o == br6)
     {
-
+        s61 = !s61;
+        s62 = !s62;
     }
     else if (o == br7)
     {
-
+        s71 = !s71;
+        s72 = !s72;
     }
     else if (o == bg1)
     {
-
+        s12 = !s12;
     }
     else if (o == bg2)
     {
-
+        s23 = !s23;
+        s24 = !s24;
     }
-
-
+    else if (o == bg3)
+    {
+        s33 = !s33;
+        s34 = !s34;
+    }
+    else if (o == bg4)
+    {
+        s43 = !s43;
+        s44 = !s44;
+    }
+    else if (o == bg5)
+    {
+        s53 = !s53;
+        s54 = !s54;
+    }
+    else if (o == bg6)
+    {
+        s63 = !s63;
+        s64 = !s64;
+    }
+    else if (o == bg7)
+    {
+        s73 = !s73;
+        s74 = !s74;
+    }
+    else if (o == bb1)
+    {
+        s13 = !s13;
+    }
+    else if (o == bb2)
+    {
+        s25 = !s25;
+        s26 = !s26;
+    }
+    else if (o == bb3)
+    {
+        s35 = !s35;
+        s36 = !s36;
+    }
+    else if (o == bb4)
+    {
+        s45 = !s45;
+        s46 = !s46;
+    }
+    else if (o == bb5)
+    {
+        s55 = !s55;
+        s56 = !s56;
+    }
+    else if (o == bb6)
+    {
+        s65 = !s65;
+        s66 = !s66;
+    }
+    else if (o == bb7)
+    {
+        s71 = !s71;
+        s72 = !s72;
+    }
 }
 
 
@@ -1113,8 +1175,28 @@ scherm.MouseDown += mouse_down_drag;
 scherm.MouseUp += mouse_up_drag;
 scherm.Paint += teken;
 
-bb1.Click += ChangeColor;
 
+br1.Click += ChangeColor;
+br2.Click += ChangeColor;
+br3.Click += ChangeColor;
+br4.Click += ChangeColor;
+br5.Click += ChangeColor;
+br6.Click += ChangeColor;
+br7.Click += ChangeColor;
+bg1.Click += ChangeColor;
+bg2.Click += ChangeColor;
+bg3.Click += ChangeColor;
+bg4.Click += ChangeColor;
+bg5.Click += ChangeColor;
+bg6.Click += ChangeColor;
+bg7.Click += ChangeColor;
+bb1.Click += ChangeColor;
+bb2.Click += ChangeColor;
+bb3.Click += ChangeColor;
+bb4.Click += ChangeColor;
+bb5.Click += ChangeColor;
+bb6.Click += ChangeColor;
+bb7.Click += ChangeColor;
 
 
 Application.Run(scherm);
