@@ -8,7 +8,7 @@ using System.DirectoryServices.ActiveDirectory;
 using System.Numerics;
 
 
-double n = 1000; //depth
+double n = 100; //depth
 
 double scale = 0.01; //smaller number means more zoom
 Point center = new Point(300, 174); //transposes the bitmap to have this point in the center
@@ -131,8 +131,9 @@ void GenControls()
     smoothening.CheckState = (CheckState) 1;
 
     //panel for interesting points, including starting point
+    //also the buttons for the locations
     scherm.Controls.Add(plaatjes);
-    plaatjes.Bounds = new Rectangle(new Point(407, 6), new Size(180, scherm.Height));
+    plaatjes.Bounds = new Rectangle(new Point(407, 6), new Size(80, 82));
     plaatjes.BackColor = Color.Transparent;
     plaatjes.BringToFront();
     CE.Bounds = new Rectangle(new Point(0, 2), new Size(80, 20));//button for collapsing and expanding
@@ -213,24 +214,6 @@ Color SmoothClr(double x,double y) //geeft smooth kleuren
     double o = inrclr.R * (1 - m / n) + outrclr.R * (m / n);
     double p = inrclr.G * (1 - m / n) + outrclr.G * (m / n);
     double q = inrclr.B * (1 - m / n) + outrclr.B * (m / n);
-    /*for (int j = 0; j < 100;j++)
-    {
-        if (m < ()) ;
-    }
-    if (m < (n * 0.3))
-    {
-        o *= 0.3;
-        p *= 0.3;
-        q *= 0.3;
-    }
-    else if (m < n * 0.6) 
-    {
-        o *= 0.6;
-        p *= 0.6;
-        q *= 0.6;
-    }
-
-    */
 
     return Color.FromArgb((byte) o, (byte) p, (byte) q);
 }
@@ -261,10 +244,7 @@ void zoom(object o, MouseEventArgs e) //zoom in/uit als je scrollt
 {
     double dmoveX = 0;
     double dmoveY = 0;
-    int moveX;
-    int moveY;
     
-
     if (e.Delta > 0)
     {
         scale *= 0.5;
@@ -278,9 +258,7 @@ void zoom(object o, MouseEventArgs e) //zoom in/uit als je scrollt
         dmoveY = center.Y - (center.Y - e.Location.Y +52) * 0.5;
     }
 
-    moveX = Convert.ToInt32(dmoveX);
-    moveY = Convert.ToInt32(dmoveY);
-    center = new Point(moveX, moveY);
+    center = new Point((int) dmoveX,(int) dmoveY);
 
     scherm.Invalidate();
 }
@@ -310,7 +288,7 @@ void mouse_up_drag(object o,MouseEventArgs e)   //verandert center, gebaseert op
 void teken(object o, PaintEventArgs e)
 {
     depth.Text = n.ToString();
-    scale_in.Text = scale.ToString("E");
+    scale_in.Text = scale.ToString("E4");
     center_x.Text = ((0.5 * scherm.Width - center.X) * scale).ToString("F4");
     center_y.Text = ((0.5 * (scherm.Height-52) - center.Y) * scale).ToString("F4");
     e.Graphics.DrawImage(plaatje(),0,52);
@@ -410,6 +388,7 @@ void punt(object o, EventArgs e)
 P2.Click += punt;
 P1.Click += punt;
 Pbasis.Click += punt;
+CE.MouseEnter += CoEx;
 CE.Click += CoEx;
 smoothening.CheckedChanged += redraw;
 innercolor.Click += verander_kleur;
