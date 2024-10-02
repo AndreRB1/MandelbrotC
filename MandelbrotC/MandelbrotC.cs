@@ -4,11 +4,19 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Collections.Generic;
-using System.DirectoryServices.ActiveDirectory;
-using System.Numerics;
-
 
 double n = 1000; //depth
+
+
+bool s11, s12, s13, s21, s22, s23, s24, s25, s26, s31, s32, s33, s34, s35, s36, s41, s42, s43, s44, s45, s46, s51, s52, s53, s54, s55, s56, s61, s62, s63, s64, s65, s66, s71, s72, s73, s74, s75, s76;
+
+s11 = s12 = s13 = s21 = s22 = s23 = s24 = s25 = s26 = s31 = s32 = s33 = s34 = s35 = s36 = s41 =
+s42 = s43 = s44 = s45 = s46 = s51 = s52 = s53 = s54 = s55 = s56 = s61 = s62 = s63 = s64 = s65 = s66 = s71 = s72 = s73 = s74 = s75 = s76 = false;
+
+bool f128n1, f128n2, f128n3, f128n4, f128n5, f128n6, f128n7, f128n8, f128n9, f128n10, f128n11, f128n12, f128n13, f128n14, f128n15, f128n16, f128n17, f128n18, f128n19, f128n20, f128n21;
+f128n1 = f128n2 = f128n3 = f128n4 = f128n5 = f128n6 = f128n7 = f128n8 = f128n9 = f128n10 = f128n11 = f128n12 = f128n13 = f128n14 = f128n15 = f128n16 = f128n17 = f128n18 = f128n19 = f128n20 = f128n21 = false;
+
+
 
 double scale = 0.01; //smaller number means more zoom
 Point center = new Point(300, 174); //transposes the bitmap to have this point in the center
@@ -18,8 +26,9 @@ bool Cobool = true;
 
 Form scherm = new Form();
 scherm.Text = "MandelbrotC";
-scherm.BackColor = Color.White;
-scherm.ClientSize = new Size(600, 400);
+scherm.BackColor = Color.MidnightBlue;
+scherm.ClientSize = new Size(800, 400);
+
 
 Label labx = new Label();
 Label laby = new Label();
@@ -185,9 +194,20 @@ int MandelNum(double x, double y) //checkt voor elk input punt wat het mandel ge
 }
 
 
-Color SmoothClr(double x,double y) //geeft smooth kleuren
+s11 = true;
+s12 = true;
+
+s21 = true;
+s25 = true;
+
+s33 = true;
+s36 = true;
+
+
+// giga colour mixer, the "s"-values switch a previous value or keep it the same, the "f128n"-value's are true when the r, g or b from the previous step was at 128 with false representing the previous value being 0. 
+Color SmoothClr(double x, double y)
 {
-    x = ((x- center.X) * scale); y= ((y-center.Y) * scale);
+    x = ((x - center.X) * scale); y = ((y - center.Y) * scale);
     double a = 0; double b = 0;
     double a_sq = 0; double b_sq = 0; double ab_sq = 0; //using variables for the squares of a, b and (a+b) uses less multiplications per loop cycle
     double i = 0;
@@ -196,7 +216,7 @@ Color SmoothClr(double x,double y) //geeft smooth kleuren
     while (t <= 4 && i < n)
     {
         a = a_sq - b_sq + x;
-        b = ab_sq - a_sq- b_sq + y;//(a+b)^2-a^2-b^2 = 2ab
+        b = ab_sq - a_sq - b_sq + y;//(a+b)^2-a^2-b^2 = 2ab
         ab_sq = (a + b) * (a + b);
         a_sq = a * a;
         b_sq = b * b;
@@ -209,46 +229,502 @@ Color SmoothClr(double x,double y) //geeft smooth kleuren
         }
         l = t;
     }
+
+
+
+
+    if (m < n * 0.125) //first 1/8 total-----------------
+    {
+        double r1, g1, b1;
+        if (s11 == true)
+        {
+            r1 = 128 * (m / (0.1 * n)); //to 128
+            f128n1 = true;
+        }
+        else
+        {
+            r1 = 0; // remain 0 
+        }
+        if (s12 == true)
+        {
+            g1 = 128 * (m / (0.1 * n)); //to 128
+            f128n2 = true;
+        }
+        else
+        {
+            g1 = 0; // remain 0   
+        }    
+        if (s13 == true)
+        {
+            b1 = 128 * (m / (0.1 * n)); //to 128
+            f128n3 = true;
+        }   
+        else
+        {
+            b1 = 0; // remain 0
+        }
+
+        return Color.FromArgb((byte) r1, (byte) g1, (byte) b1);
+    }
+
+    else if (m < n * 0.25) //2e 1/8 total-----------------
+    {
+        double r2, g2, b2;
+        if (s21 == true && f128n1 == true)
+        {
+            r2 = 128 - 128 * ((m - 0.125 * n) / (0.1 * n)); //to 0
+            f128n4 = false;
+        }
+        else if (s22 == true && f128n1 == true)
+        {
+            r2 = 128; //remain 128
+        }
+        else if (s21 == true && f128n1 == false)
+        {
+            r2 = 128 * ((m - 0.125 * n) / (0.1 * n)); //to 128
+            f128n4 = true;
+        }
+        else
+        {
+            r2 = 0; // remain 0
+        }
+
+        if (s23 == true && f128n2 == true)
+        {
+            g2 = 128 - 128 * ((m - 0.125 * n) / (0.1 * n)); //to 0
+            f128n5 = false;
+        }
+
+        else if (s24 == true && f128n2 == true)
+        {
+            g2 = 128; //remain 128
+        }
+
+        else if (s23 == true && f128n2 == false)
+        {
+            g2 = 128 * ((m - 0.125 * n) / (0.1 * n)); //to 128
+            f128n5 = true;
+        }
+        else
+        {
+            g2 = 0; // remain 0
+        }
+
+        if (s25 == true && f128n3 == true)
+        {
+            b2 = 128 - 128 * ((m - 0.125 * n) / (0.1 * n)); //to 0
+            f128n6 = false;
+        }
+
+        else if (s26 == true && f128n3 == true)
+        {
+            b2 = 128; //remain 128
+        }
+
+        else if (s25 == true && f128n3 == false)
+        {
+            b2 = 128 * ((m - 0.125 * n) / (0.1 * n)); //to 128
+            f128n6 = true;
+        }
+        else
+        {
+            b2 = 0; // remain 0
+        }
+
+        return Color.FromArgb((byte) r2, (byte) g2, (byte) b2);
+    }
+
+    else if (m < n * 0.375) //3e 1/8 total----------------
+    {
+        double r3, g3, b3;
+        if (s31 == true && f128n4 == true)
+        {
+            r3 = 128 - 128 * ((m - 0.25 * n) / (0.1 * n)); //to 0
+            f128n7 = false;
+        }
+           
+        else if (s32 == true && f128n4 == true)
+        {
+            r3 = 128; //remain 128
+        }
+         
+        else if (s31 == true && f128n4 == false)
+        {
+            r3 = 128 * ((m - 0.25 * n) / (0.1 * n)); //to 128
+            f128n7 = true;
+        }
+        else
+        {
+            r3 = 0; // remain 0
+        }
+       
+        if (s33 == true && f128n5 == true)
+        {
+            g3 = 128 - 128 * ((m - 0.25 * n) / (0.1 * n)); //to 0
+            f128n8 = false;
+        }
+         
+        else if (s34 == true && f128n5 == true)
+        {
+            g3 = 128; //remain 128
+        }
+          
+        else if (s33 == true && f128n5 == false)
+        {
+            g3 = 128 * ((m - 0.25 * n) / (0.1 * n)); //to 128
+            f128n8 = true;
+        }  
+        else
+        {
+            g3 = 0; // remain 0
+        }
+       
+        if (s35 == true && f128n6 == true)
+        {
+            b3 = 128 - 128 * ((m - 0.25 * n) / (0.1 * n)); //to 0
+            f128n9 = false;
+        }
+           
+        else if (s36 == true && f128n6 == true)
+        {
+            b3 = 128; //remain 128
+        }
+         
+        else if (s35 == true && f128n6 == false)
+        {
+            b3 = 128 * ((m - 0.25 * n) / (0.1 * n)); //to 128
+            f128n9 = true;
+        }
+        else
+        {
+            b3 = 0; // remain 0
+        }
+            
+        return Color.FromArgb((byte) r3, (byte) g3, (byte) b3);
+    }
+
+    else if (m < n * 0.5) //4e 1/8 total----------------
+    {
+        double r4, g4, b4;
+        if (s41 == true && f128n7 == true)
+        {
+            r4 = 128 - 128 * ((m - 0.375 * n) / (0.1 * n)); //to 0
+            f128n10 = false;
+        }
+          
+        else if (s42 == true && f128n7 == true)
+        {
+            r4 = 128; //remain 128
+        }
+           
+        else if (s41 == true && f128n7 == false)
+        {
+            r4 = 128 * ((m - 0.375 * n) / (0.1 * n)); //to 128
+            f128n10 = true;
+        }
+        else
+        {
+            r4 = 0; // remain 0
+        }
+        
+        if (s43 == true && f128n8 == true)
+        {
+            g4 = 128 - 128 * ((m - 0.375 * n) / (0.1 * n)); //to 0
+            f128n11 = false;
+        }
+          
+        else if (s44 == true && f128n8 == true)
+        {
+            g4 = 128; //remain 128
+        }
+          
+        else if (s43 == true && f128n8 == false)
+        {
+            g4 = 128 * ((m - 0.375 * n) / (0.1 * n)); //to 128
+            f128n11 = true;
+        }
+        else
+        {
+            g4 = 0; // remain 0
+        }
+        
+     
+        if (s45 == true && f128n9 == true)
+        {
+            b4 = 128 - 128 * ((m - 0.375 * n) / (0.1 * n)); //to 0
+            f128n12 = false;
+        }
+        
+        else if (s46 == true && f128n9 == true)
+        {
+            b4 = 128; //remain 128
+        }
+         
+        else if (s45 == true && f128n9 == false)
+        {
+            b4 = 128 * ((m - 0.375 * n) / (0.1 * n)); //to 128
+            f128n12 = true;
+        }
+        else
+        {
+            b4 = 0; // remain 0
+        }                
+
+        return Color.FromArgb((byte) r4, (byte) g4, (byte) b4);
+    }
+
+    else if (m < n * 0.625) //5e 1/8 total----------------
+    {
+        double r5, g5, b5;
+        if (s51 == true && f128n10 == true)
+        {
+            r5 = 128 - 128 * ((m - 0.5 * n) / (0.1 * n)); //to 0
+            f128n13 = false;
+        }
+           
+        else if (s52 == true && f128n10 == true)
+        {
+            r5 = 128; //remain 128
+        }
+         
+        else if (s51 == true && f128n10 == false)
+        {
+            r5 = 128 * ((m - 0.5 * n) / (0.1 * n)); //to 128
+            f128n13 = true;
+        }
+        else
+        {
+            r5 = 0; // remain 0
+        }          
     
-    double o = inrclr.R * (1 - m / n) + outrclr.R * (m / n);
-    double p = inrclr.G * (1 - m / n) + outrclr.G * (m / n);
-    double q = inrclr.B * (1 - m / n) + outrclr.B * (m / n);
-    /*for (int j = 0; j < 100;j++)
-    {
-        if (m < ()) ;
-    }
-    if (m < (n * 0.3))
-    {
-        o *= 0.3;
-        p *= 0.3;
-        q *= 0.3;
-    }
-    else if (m < n * 0.6) 
-    {
-        o *= 0.6;
-        p *= 0.6;
-        q *= 0.6;
+        if (s53 == true && f128n11 == true)
+        {
+            g5 = 128 - 128 * ((m - 0.5 * n) / (0.1 * n)); //to 0
+            f128n14 = false;
+        }
+           
+        else if (s54 == true && f128n11 == true)
+        {
+            g5 = 128; //remain 128
+        }
+        
+        else if (s53 == true && f128n1 == false)
+        {
+            g5 = 128 * ((m - 0.5 * n) / (0.1 * n)); //to 128
+            f128n14 = true;
+        }
+        else
+        {
+            g5 = 0; // remain 0
+        }
+     
+        if (s55 == true && f128n12 == true)
+        {
+            b5 = 128 - 128 * ((m - 0.5 * n) / (0.1 * n)); //to 0
+            f128n15 = false;
+        }
+          
+        else if (s56 == true && f128n12 == true)
+        {
+            b5 = 128; //remain 128
+        }
+         
+        else if (s55 == true && f128n12 == false)
+        {
+            b5 = 128 * ((m - 0.5 * n) / (0.1 * n)); //to 128
+            f128n15 = true;
+        }
+        else
+        {
+            b5 = 0; // remain 0
+        }
+
+        return Color.FromArgb((byte) r5, (byte) g5, (byte) b5);
     }
 
-    */
+    else if (m < n * 0.750) //6e 1/8 total---------------
+    {
+        double r6, g6, b6;
+        if (s61 == true && f128n13 == true)
+        {
+            r6 = 128 - 128 * ((m - 0.625 * n) / (0.1 * n)); //to 0
+            f128n16 = false;
+        }
+       
+        else if (s62 == true && f128n13 == true)
+        {
+            r6 = 128; //remain 128
+        }
+    
+        else if (s61 == true && f128n13 == false)
+        {
+            r6 = 128 * ((m - 0.625 * n) / (0.1 * n)); //to 128
+            f128n16 = true;
+        }
+        else
+        {
+            r6 = 0; // remain 0
+        } 
+      
+        if (s63 == true && f128n14 == true)
+        {
+            g6 = 128 - 128 * ((m - 0.625 * n) / (0.1 * n)); //to 0
+            f128n17 = false;
+        }
+        
+        else if (s64 == true && f128n14 == true)
+        {
+            g6 = 128; //remain 128
+        }
+         
+        else if (s63 == true && f128n14 == false)
+        {
+            g6 = 128 * ((m - 0.625 * n) / (0.1 * n)); //to 128
+            f128n17 = true;
+        }
+        else
+        {
+            g6 = 0; // remain 0
+        }        
+   
+        if (s65 == true && f128n15 == true)
+        {
+            b6 = 128 - 128 * ((m - 0.625 * n) / (0.1 * n)); //to 0
+            f128n18 = false;
+        }
+        else if (s66 == true && f128n15 == true)
+        {
+            b6 = 128; //remain 128
+        }
+        else if (s65 == true && f128n15 == false)
+        {
+            b6 = 128 * ((m - 0.625 * n) / (0.1 * n)); //to 128
+            f128n18 = true;
+        }
+        else
+        {
+            b6 = 0; // remain 0
+        }
 
-    return Color.FromArgb((byte) o, (byte) p, (byte) q);
+        return Color.FromArgb((byte) r6, (byte) g6, (byte) b6);
+    }
+
+    else if (m < n * 0.875) //7e 1/8 total---------------
+    {
+        double r7, g7, b7;
+        if (s71 == true && f128n16 == true)
+        {
+            r7 = 128 - 128 * ((m - 0.75 * n) / (0.1 * n)); //to 0
+            f128n19 = false;
+        }
+         
+        else if (s72 == true && f128n16 == true)
+        {
+            r7 = 128; //remain 128
+        }
+       
+        else if (s71 == true && f128n16 == false)
+        {
+            r7 = 128 * ((m - 0.75 * n) / (0.1 * n)); //to 128
+            f128n19 = true;
+        }
+        else
+        {
+            r7 = 0; // remain 0
+        }
+
+        if (s73 == true && f128n17 == true)
+        {
+            g7 = 128 - 128 * ((m - 0.75 * n) / (0.1 * n)); //to 0
+            f128n20 = false;
+        }
+          
+        else if (s74 == true && f128n17 == true)
+        {
+            g7 = 128; //remain 128
+        }
+           
+        else if (s73 == true && f128n17 == false)
+        {
+            g7 = 128 * ((m - 0.75 * n) / (0.1 * n)); //to 128
+            f128n20 = true;
+        }
+        else
+        {
+            g7 = 0; // remain 0
+        }
+         
+      
+        if (s75 == true && f128n18 == true)
+        {
+            b7 = 128 - 128 * ((m - 0.75 * n) / (0.1 * n)); //to 0
+            f128n21 = false;
+        }
+         
+        else if (s76 == true && f128n18 == true)
+        {
+            b7 = 128; //remain 128
+        }
+       
+        else if (s75 == true && f128n18 == false)
+        {
+            b7 = 128 * ((m - 0.75 * n) / (0.1 * n)); //to 128
+            f128n21 = true;
+        }
+        else
+        {
+            b7 = 0; // remain 0
+        }
+
+        return Color.FromArgb((byte) r7, (byte) g7, (byte) b7);
+    }
+
+    else //final 1/8 total-------------------
+    {
+        double r8, g8, b8;
+        if (f128n19 == true)
+        {
+            r8 = 128 - 128 * ((m - 0.875 * n) / (0.1 * n)); //to 0
+        }
+        else
+        {
+            r8 = 0; // remain 0  
+        }
+        if (f128n20 == true)
+        {
+            g8 = 128 - 128 * ((m - 0.875 * n) / (0.1 * n)); //to 0
+        } 
+        else
+        {
+            g8 = 0; // remain 0 
+        }
+        if (f128n21 == true)
+        {
+            b8 = 128 - 128 * ((m - 0.875 * n) / (0.1 * n)); //to 0
+        }
+        else
+        {
+            b8 = 0; // remain 0
+        }
+
+        return Color.FromArgb((byte) r8, (byte) g8, (byte) b8);
+    }
 }
 
 
 Bitmap plaatje() //maakt bitmap
 {
-    Bitmap plaatje = new Bitmap(scherm.ClientSize.Width, scherm.ClientSize.Height-52);
+    Bitmap plaatje = new Bitmap(scherm.ClientSize.Width-200, scherm.ClientSize.Height-52);
     if (smoothening.CheckState == (CheckState)1)
     {
-        for (double i = 0; i < scherm.ClientSize.Width; i++)
+        for (double i = 0; i < scherm.ClientSize.Width-200; i++)
             for (double j = 0; j < scherm.ClientSize.Height - 52; j++)
                 plaatje.SetPixel((int)i, (int)j, SmoothClr(i, j));
         return plaatje;
     }
     else
     {
-        for (double i = 0; i < scherm.ClientSize.Width; i++)
+        for (double i = 0; i < scherm.ClientSize.Width-200; i++)
             for (double j = 0; j < scherm.ClientSize.Height - 52; j++)
                 plaatje.SetPixel((int)i, (int)j, colors[MandelNum(i, j)]);
         return plaatje;
