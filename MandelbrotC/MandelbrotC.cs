@@ -1,3 +1,5 @@
+﻿//scroll to zoom, drag to move
+
 using System;
 using System.Drawing;
 using System.Windows.Forms;
@@ -12,6 +14,7 @@ double scale = 0.01; //smaller number means more zoom
 Point center = new Point(300, 174); //transposes the bitmap to have this point in the center
 Point mouse_down = new (0, 0); //use for dragging the image
 bool mouse_down_bool = false;
+bool Cobool = true;
 
 Form scherm = new Form();
 scherm.Text = "MandelbrotC";
@@ -24,6 +27,7 @@ Label labscale = new Label();
 Label labInnerColor = new Label();
 Label labOuterColor = new Label();
 Label LabDepth = new Label();
+Label labSmooth = new Label();
 TextBox center_x = new TextBox();
 TextBox center_y = new TextBox();
 TextBox scale_in = new TextBox();
@@ -31,11 +35,16 @@ TextBox depth = new TextBox();
 Button knop = new Button();
 Button innercolor = new Button();
 Button outercolor = new Button();
+Button CE = new Button();
+Button Pbasis = new Button();
+Button P1 = new Button();
+Button P2 = new Button();
+CheckBox smoothening = new CheckBox();
+Panel plaatjes = new Panel();
 
 Color inrclr = Color.Black;
 Color outrclr = Color.White;
-// List<Color> colors = gen_palette(inrclr, outrclr);
-
+List<Color> colors = gen_palette(inrclr, outrclr);
 
 GenControls();
 void GenControls()
@@ -70,7 +79,12 @@ void GenControls()
     LabDepth.Location = new Point(306, 6);
     LabDepth.Size = new Size(41, 20);
     LabDepth.Text = "depth:";
-
+    //label for smoothening
+    scherm.Controls.Add(labSmooth);
+    labSmooth.Location = new Point(306, 30);
+    labSmooth.Size = new Size(80, 20);
+    labSmooth.Text = "smoothening:";
+    
     //***TEXTBOXES***
     //textbox for x coord
     scherm.Controls.Add(center_x);
@@ -109,10 +123,35 @@ void GenControls()
     outercolor.Location = new Point(206, 26);
     outercolor.Size = new Size(80, 20);
     outercolor.Text = "kleur 2";
+
+    //Chechbox for turning on smoothening
+    scherm.Controls.Add(smoothening);
+    smoothening.Location = new Point(386, 30);
+    smoothening.Size = new Size(20, 20);
+    smoothening.CheckState = (CheckState) 1;
+
+    //panel for interesting points, including starting point
+    scherm.Controls.Add(plaatjes);
+    plaatjes.Bounds = new Rectangle(new Point(407, 6), new Size(180, scherm.Height));
+    plaatjes.BackColor = Color.Transparent;
+    plaatjes.BringToFront();
+    CE.Bounds = new Rectangle(new Point(0, 2), new Size(80, 20));//button for collapsing and expanding
+    CE.Text = "˅   Punten";
+    Pbasis.Bounds = new Rectangle(new Point(0, 22), new Size(80, 20));//base point
+    Pbasis.Text = "Basispunt";
+    Pbasis.BackColor = Color.White;
+    P1.Bounds = new Rectangle(new Point(0, 42), new Size(80, 20));
+    P1.Text = "Punt 1";
+    P1.BackColor = Color.White;
+    P2.Bounds = new Rectangle(new Point(0, 62), new Size(80, 20));
+    P2.Text = "Punt 2";
+    P2.BackColor = Color.White;
+    plaatjes.Controls.Add(CE);
+
 }
 
 
-/* List<Color> gen_palette(Color zero, Color outer)//create color palatte
+List<Color> gen_palette(Color zero, Color outer)//create color palatte
 {
     List<Color> colors = new List<Color>();
     for (double i = 0; i <= n; i++)
@@ -124,26 +163,29 @@ void GenControls()
         colors.Add(colori);
     }
     return colors;
-} */
-/*
- * 
- * If (i < n * 0,1) // black to red
- *      Color.FromArgb(0, 0, 255 * (i / n))
- * 
- * else if ( i < n * 0,2) red to yellow
- *      Color.FromArgb(255 * (i / n), 255 * (i / n), 255 - 255 * (i / n))
- * 
- * else if (i < n * 0,3
- *      etc
- * 
- * etc
- * 
- */
+}
 
 
+int MandelNum(double x, double y) //checkt voor elk input punt wat het mandel getal is
+{
+    x = ((x - center.X) * scale); y = ((y - center.Y) * scale);
+    double a = 0; double b = 0;
+    double a_sq = 0; double b_sq = 0; double ab_sq = 0; //using variables for the squares of a, b and (a+b) uses less multiplications per loop cycle
+    int i = 0;
+    while (a_sq + b_sq <= 4 && i < n)
+    {
+        ab_sq = (a + b) * (a + b);
+        a_sq = a * a;
+        b_sq = b * b;
+        a = a_sq - b_sq + x;
+        b = ab_sq - a_sq - b_sq + y;//(a+b)^2-a^2-b^2 = 2ab
+        i++;
+    }
+    return i;
+}
 
 
-Color MandelNum(double x,double y) //checkt voor elk input punt wat het mandel getal is
+Color SmoothClr(double x,double y) //geeft smooth kleuren
 {
     x = ((x- center.X) * scale); y= ((y-center.Y) * scale);
     double a = 0; double b = 0;
@@ -167,7 +209,6 @@ Color MandelNum(double x,double y) //checkt voor elk input punt wat het mandel g
         }
         l = t;
     }
-    
     
     double o = inrclr.R * (1 - m / n) + outrclr.R * (m / n);
     double p = inrclr.G * (1 - m / n) + outrclr.G * (m / n);
@@ -198,10 +239,20 @@ Color MandelNum(double x,double y) //checkt voor elk input punt wat het mandel g
 Bitmap plaatje() //maakt bitmap
 {
     Bitmap plaatje = new Bitmap(scherm.ClientSize.Width, scherm.ClientSize.Height-52);
-    for (double i = 0; i < scherm.ClientSize.Width; i++)
-        for (double j = 0; j < scherm.ClientSize.Height-52; j++)
-            plaatje.SetPixel((int) i, (int)j, MandelNum(i,j));
-    return plaatje;
+    if (smoothening.CheckState == (CheckState)1)
+    {
+        for (double i = 0; i < scherm.ClientSize.Width; i++)
+            for (double j = 0; j < scherm.ClientSize.Height - 52; j++)
+                plaatje.SetPixel((int)i, (int)j, SmoothClr(i, j));
+        return plaatje;
+    }
+    else
+    {
+        for (double i = 0; i < scherm.ClientSize.Width; i++)
+            for (double j = 0; j < scherm.ClientSize.Height - 52; j++)
+                plaatje.SetPixel((int)i, (int)j, colors[MandelNum(i, j)]);
+        return plaatje;
+    }
 }
 
 
@@ -227,14 +278,9 @@ void zoom(object o, MouseEventArgs e) //zoom in/uit als je scrollt
         dmoveY = center.Y - (center.Y - e.Location.Y +52) * 0.5;
     }
 
-
-    
     moveX = Convert.ToInt32(dmoveX);
     moveY = Convert.ToInt32(dmoveY);
-
-
     center = new Point(moveX, moveY);
-    
 
     scherm.Invalidate();
 }
@@ -276,6 +322,7 @@ void bereken(object o, EventArgs e)
     try
     {
         n = double.Parse(depth.Text);
+        colors = gen_palette(inrclr, outrclr);
         scale = double.Parse(scale_in.Text);
         center = new Point((int)(0.5 * scherm.Width - double.Parse(center_x.Text)/scale),(int)(0.5 * (scherm.Height - 52) - double.Parse(center_y.Text)/scale));
         scherm.Invalidate();
@@ -306,6 +353,65 @@ void verander_kleur(object o, EventArgs e)
 }
 
 
+void redraw(object o, EventArgs e)
+{
+    scherm.Invalidate();
+}
+
+
+void CoEx(object o, EventArgs e)
+{
+    if (Cobool)
+    {
+        plaatjes.Controls.Add(Pbasis);
+        plaatjes.Controls.Add(P1);
+        plaatjes.Controls.Add(P2);
+        Cobool = false;
+    }
+    else
+    {
+        plaatjes.Controls.Remove(Pbasis);
+        plaatjes.Controls.Remove(P1);
+        plaatjes.Controls.Remove(P2);
+        Cobool = true;
+    }
+}
+
+
+void punt(object o, EventArgs e)
+{
+    if (o == Pbasis)
+    {
+        center.X = scherm.ClientSize.Width / 2;
+        center.Y = (scherm.ClientSize.Height - 52) / 2;
+        scale = 0.01;
+        n = 100;
+        scherm.Invalidate();
+    }
+    else if (o == P1)
+    {
+        n = 1000;
+        center_x.Text = (-0.7829).ToString();
+        center_y.Text = 0.1303.ToString();
+        scale_in.Text = (2.824752E-6).ToString();
+        bereken(knop, EventArgs.Empty);
+    }
+    else if (o == P2)
+    {
+        n = 1000;
+        center_x.Text = (0.3123).ToString();
+        center_y.Text = 0.0261.ToString();
+        scale_in.Text = (2.4E-7).ToString();
+        bereken(knop, EventArgs.Empty);
+    }
+}
+
+
+P2.Click += punt;
+P1.Click += punt;
+Pbasis.Click += punt;
+CE.Click += CoEx;
+smoothening.CheckedChanged += redraw;
 innercolor.Click += verander_kleur;
 outercolor.Click += verander_kleur;
 knop.Click += bereken;
@@ -313,7 +419,5 @@ scherm.MouseWheel += zoom;
 scherm.MouseDown += mouse_down_drag;
 scherm.MouseUp += mouse_up_drag;
 scherm.Paint += teken;
+
 Application.Run(scherm);
-
-
-
