@@ -1,9 +1,9 @@
 ﻿//scroll to zoom, drag to move
 
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
-using System.Collections.Generic;
 
 
 double n = 100; //depth
@@ -21,7 +21,7 @@ f128n1 = f128n2 = f128n3 = f128n4 = f128n5 = f128n6 = f128n7 = f128n8 = f128n9 =
 double scale = 0.01; //smaller number means more zoom
 Point center = new Point(300, 200); //transposes the bitmap to have this point in the center
 Point mouse_down = center; //use for dragging the image
-bool mouse_down_bool = true;
+bool mouse_down_bool = false;
 
 Form scherm = new Form();
 scherm.Text = "MandelbrotC";
@@ -92,7 +92,7 @@ void GenControls()
     labSmooth.Location = new Point(106, 70);
     labSmooth.Size = new Size(80, 20);
     labSmooth.Text = "smoothening:";
-    
+
     //***TEXTBOXES***
     //textbox for x coord
     scherm.Controls.Add(center_x);
@@ -115,7 +115,7 @@ void GenControls()
     depth.Size = new Size(60, 20);
     depth.Text = $"{n}";
 
- //***BUTTONS***
+    //***BUTTONS***
     //button for calculating with given input
     scherm.Controls.Add(knop);
     knop.Location = new Point(0, 72);
@@ -123,8 +123,8 @@ void GenControls()
     knop.Text = "bereken";
     knop.BackColor = Color.Green;
     //button for selecting the inner color
-    innercolor.Location = new Point(0, 0); 
-    innercolor.Size = new Size(80, 20); 
+    innercolor.Location = new Point(0, 0);
+    innercolor.Size = new Size(80, 20);
     innercolor.Text = "kleur 1";
     //button for selecting outer color
     outercolor.Location = new Point(0, 20);
@@ -154,16 +154,16 @@ void GenControls()
     scherm.Controls.Add(smoothening);
     smoothening.Location = new Point(186, 70);
     smoothening.Size = new Size(14, 20);
-    smoothening.CheckState = (CheckState) 1;
+    smoothening.CheckState = (CheckState)1;
 
     //Combobox for interesting points, including starting point
     scherm.Controls.Add(plaatjes);
     plaatjes.Bounds = new Rectangle(new Point(106, 90), new Size(80, 20));
-    plaatjes.Items.Add("basispunt"); 
-    plaatjes.Items.Add("Punt 1"); 
+    plaatjes.Items.Add("basispunt");
+    plaatjes.Items.Add("Punt 1");
     plaatjes.Items.Add("Punt 2");
     plaatjes.SelectedIndex = 0;
-    
+
 
 }
 
@@ -261,18 +261,18 @@ Color SmoothClr(double x, double y)
         else
         {
             g1 = 0; // remain 0   
-        }    
+        }
         if (s13 == true)
         {
             b1 = 128 * (m / (0.1 * n)); //to 128
             f128n3 = true;
-        }   
+        }
         else
         {
             b1 = 0; // remain 0
         }
 
-        return Color.FromArgb((byte) r1, (byte) g1, (byte) b1);
+        return Color.FromArgb((byte)r1, (byte)g1, (byte)b1);
     }
 
     else if (m < n * 0.25) //2e 1/8 total-----------------
@@ -339,7 +339,7 @@ Color SmoothClr(double x, double y)
             b2 = 0; // remain 0
         }
 
-        return Color.FromArgb((byte) r2, (byte) g2, (byte) b2);
+        return Color.FromArgb((byte)r2, (byte)g2, (byte)b2);
     }
 
     else if (m < n * 0.375) //3e 1/8 total----------------
@@ -350,12 +350,12 @@ Color SmoothClr(double x, double y)
             r3 = 128 - 128 * ((m - 0.25 * n) / (0.1 * n)); //to 0
             f128n7 = false;
         }
-           
+
         else if (s32 == true && f128n4 == true)
         {
             r3 = 128; //remain 128
         }
-         
+
         else if (s31 == true && f128n4 == false)
         {
             r3 = 128 * ((m - 0.25 * n) / (0.1 * n)); //to 128
@@ -365,39 +365,39 @@ Color SmoothClr(double x, double y)
         {
             r3 = 0; // remain 0
         }
-       
+
         if (s33 == true && f128n5 == true)
         {
             g3 = 128 - 128 * ((m - 0.25 * n) / (0.1 * n)); //to 0
             f128n8 = false;
         }
-         
+
         else if (s34 == true && f128n5 == true)
         {
             g3 = 128; //remain 128
         }
-          
+
         else if (s33 == true && f128n5 == false)
         {
             g3 = 128 * ((m - 0.25 * n) / (0.1 * n)); //to 128
             f128n8 = true;
-        }  
+        }
         else
         {
             g3 = 0; // remain 0
         }
-       
+
         if (s35 == true && f128n6 == true)
         {
             b3 = 128 - 128 * ((m - 0.25 * n) / (0.1 * n)); //to 0
             f128n9 = false;
         }
-           
+
         else if (s36 == true && f128n6 == true)
         {
             b3 = 128; //remain 128
         }
-         
+
         else if (s35 == true && f128n6 == false)
         {
             b3 = 128 * ((m - 0.25 * n) / (0.1 * n)); //to 128
@@ -407,8 +407,8 @@ Color SmoothClr(double x, double y)
         {
             b3 = 0; // remain 0
         }
-            
-        return Color.FromArgb((byte) r3, (byte) g3, (byte) b3);
+
+        return Color.FromArgb((byte)r3, (byte)g3, (byte)b3);
     }
 
     else if (m < n * 0.5) //4e 1/8 total----------------
@@ -419,12 +419,12 @@ Color SmoothClr(double x, double y)
             r4 = 128 - 128 * ((m - 0.375 * n) / (0.1 * n)); //to 0
             f128n10 = false;
         }
-          
+
         else if (s42 == true && f128n7 == true)
         {
             r4 = 128; //remain 128
         }
-           
+
         else if (s41 == true && f128n7 == false)
         {
             r4 = 128 * ((m - 0.375 * n) / (0.1 * n)); //to 128
@@ -434,18 +434,18 @@ Color SmoothClr(double x, double y)
         {
             r4 = 0; // remain 0
         }
-        
+
         if (s43 == true && f128n8 == true)
         {
             g4 = 128 - 128 * ((m - 0.375 * n) / (0.1 * n)); //to 0
             f128n11 = false;
         }
-          
+
         else if (s44 == true && f128n8 == true)
         {
             g4 = 128; //remain 128
         }
-          
+
         else if (s43 == true && f128n8 == false)
         {
             g4 = 128 * ((m - 0.375 * n) / (0.1 * n)); //to 128
@@ -455,19 +455,19 @@ Color SmoothClr(double x, double y)
         {
             g4 = 0; // remain 0
         }
-        
-     
+
+
         if (s45 == true && f128n9 == true)
         {
             b4 = 128 - 128 * ((m - 0.375 * n) / (0.1 * n)); //to 0
             f128n12 = false;
         }
-        
+
         else if (s46 == true && f128n9 == true)
         {
             b4 = 128; //remain 128
         }
-         
+
         else if (s45 == true && f128n9 == false)
         {
             b4 = 128 * ((m - 0.375 * n) / (0.1 * n)); //to 128
@@ -476,9 +476,9 @@ Color SmoothClr(double x, double y)
         else
         {
             b4 = 0; // remain 0
-        }                
+        }
 
-        return Color.FromArgb((byte) r4, (byte) g4, (byte) b4);
+        return Color.FromArgb((byte)r4, (byte)g4, (byte)b4);
     }
 
     else if (m < n * 0.625) //5e 1/8 total----------------
@@ -489,12 +489,12 @@ Color SmoothClr(double x, double y)
             r5 = 128 - 128 * ((m - 0.5 * n) / (0.1 * n)); //to 0
             f128n13 = false;
         }
-           
+
         else if (s52 == true && f128n10 == true)
         {
             r5 = 128; //remain 128
         }
-         
+
         else if (s51 == true && f128n10 == false)
         {
             r5 = 128 * ((m - 0.5 * n) / (0.1 * n)); //to 128
@@ -503,19 +503,19 @@ Color SmoothClr(double x, double y)
         else
         {
             r5 = 0; // remain 0
-        }          
-    
+        }
+
         if (s53 == true && f128n11 == true)
         {
             g5 = 128 - 128 * ((m - 0.5 * n) / (0.1 * n)); //to 0
             f128n14 = false;
         }
-           
+
         else if (s54 == true && f128n11 == true)
         {
             g5 = 128; //remain 128
         }
-        
+
         else if (s53 == true && f128n1 == false)
         {
             g5 = 128 * ((m - 0.5 * n) / (0.1 * n)); //to 128
@@ -525,18 +525,18 @@ Color SmoothClr(double x, double y)
         {
             g5 = 0; // remain 0
         }
-     
+
         if (s55 == true && f128n12 == true)
         {
             b5 = 128 - 128 * ((m - 0.5 * n) / (0.1 * n)); //to 0
             f128n15 = false;
         }
-          
+
         else if (s56 == true && f128n12 == true)
         {
             b5 = 128; //remain 128
         }
-         
+
         else if (s55 == true && f128n12 == false)
         {
             b5 = 128 * ((m - 0.5 * n) / (0.1 * n)); //to 128
@@ -547,7 +547,7 @@ Color SmoothClr(double x, double y)
             b5 = 0; // remain 0
         }
 
-        return Color.FromArgb((byte) r5, (byte) g5, (byte) b5);
+        return Color.FromArgb((byte)r5, (byte)g5, (byte)b5);
     }
 
     else if (m < n * 0.750) //6e 1/8 total---------------
@@ -558,12 +558,12 @@ Color SmoothClr(double x, double y)
             r6 = 128 - 128 * ((m - 0.625 * n) / (0.1 * n)); //to 0
             f128n16 = false;
         }
-       
+
         else if (s62 == true && f128n13 == true)
         {
             r6 = 128; //remain 128
         }
-    
+
         else if (s61 == true && f128n13 == false)
         {
             r6 = 128 * ((m - 0.625 * n) / (0.1 * n)); //to 128
@@ -572,19 +572,19 @@ Color SmoothClr(double x, double y)
         else
         {
             r6 = 0; // remain 0
-        } 
-      
+        }
+
         if (s63 == true && f128n14 == true)
         {
             g6 = 128 - 128 * ((m - 0.625 * n) / (0.1 * n)); //to 0
             f128n17 = false;
         }
-        
+
         else if (s64 == true && f128n14 == true)
         {
             g6 = 128; //remain 128
         }
-         
+
         else if (s63 == true && f128n14 == false)
         {
             g6 = 128 * ((m - 0.625 * n) / (0.1 * n)); //to 128
@@ -593,8 +593,8 @@ Color SmoothClr(double x, double y)
         else
         {
             g6 = 0; // remain 0
-        }        
-   
+        }
+
         if (s65 == true && f128n15 == true)
         {
             b6 = 128 - 128 * ((m - 0.625 * n) / (0.1 * n)); //to 0
@@ -614,7 +614,7 @@ Color SmoothClr(double x, double y)
             b6 = 0; // remain 0
         }
 
-        return Color.FromArgb((byte) r6, (byte) g6, (byte) b6);
+        return Color.FromArgb((byte)r6, (byte)g6, (byte)b6);
     }
 
     else if (m < n * 0.875) //7e 1/8 total---------------
@@ -625,12 +625,12 @@ Color SmoothClr(double x, double y)
             r7 = 128 - 128 * ((m - 0.75 * n) / (0.1 * n)); //to 0
             f128n19 = false;
         }
-         
+
         else if (s72 == true && f128n16 == true)
         {
             r7 = 128; //remain 128
         }
-       
+
         else if (s71 == true && f128n16 == false)
         {
             r7 = 128 * ((m - 0.75 * n) / (0.1 * n)); //to 128
@@ -646,12 +646,12 @@ Color SmoothClr(double x, double y)
             g7 = 128 - 128 * ((m - 0.75 * n) / (0.1 * n)); //to 0
             f128n20 = false;
         }
-          
+
         else if (s74 == true && f128n17 == true)
         {
             g7 = 128; //remain 128
         }
-           
+
         else if (s73 == true && f128n17 == false)
         {
             g7 = 128 * ((m - 0.75 * n) / (0.1 * n)); //to 128
@@ -661,19 +661,19 @@ Color SmoothClr(double x, double y)
         {
             g7 = 0; // remain 0
         }
-         
-      
+
+
         if (s75 == true && f128n18 == true)
         {
             b7 = 128 - 128 * ((m - 0.75 * n) / (0.1 * n)); //to 0
             f128n21 = false;
         }
-         
+
         else if (s76 == true && f128n18 == true)
         {
             b7 = 128; //remain 128
         }
-       
+
         else if (s75 == true && f128n18 == false)
         {
             b7 = 128 * ((m - 0.75 * n) / (0.1 * n)); //to 128
@@ -684,7 +684,7 @@ Color SmoothClr(double x, double y)
             b7 = 0; // remain 0
         }
 
-        return Color.FromArgb((byte) r7, (byte) g7, (byte) b7);
+        return Color.FromArgb((byte)r7, (byte)g7, (byte)b7);
     }
 
     else //final 1/8 total-------------------
@@ -701,7 +701,7 @@ Color SmoothClr(double x, double y)
         if (f128n20 == true)
         {
             g8 = 128 - 128 * ((m - 0.875 * n) / (0.1 * n)); //to 0
-        } 
+        }
         else
         {
             g8 = 0; // remain 0 
@@ -715,24 +715,24 @@ Color SmoothClr(double x, double y)
             b8 = 0; // remain 0
         }
 
-        return Color.FromArgb((byte) r8, (byte) g8, (byte) b8);
+        return Color.FromArgb((byte)r8, (byte)g8, (byte)b8);
     }
 }
 
 
 Bitmap plaatje() //maakt bitmap
 {
-    Bitmap plaatje = new Bitmap(scherm.ClientSize.Width-200, scherm.ClientSize.Height);
+    Bitmap plaatje = new Bitmap(scherm.ClientSize.Width - 200, scherm.ClientSize.Height);
     if (smoothening.CheckState == (CheckState)1)
     {
-        for (double i = 0; i < scherm.ClientSize.Width-200; i++)
+        for (double i = 0; i < scherm.ClientSize.Width - 200; i++)
             for (double j = 0; j < scherm.ClientSize.Height; j++)
                 plaatje.SetPixel((int)i, (int)j, SmoothClr(i, j));
         return plaatje;
     }
     else
     {
-        for (double i = 0; i < scherm.ClientSize.Width-200; i++)
+        for (double i = 0; i < scherm.ClientSize.Width - 200; i++)
             for (double j = 0; j < scherm.ClientSize.Height - 52; j++)
                 plaatje.SetPixel((int)i, (int)j, colors[MandelNum(i, j)]);
         return plaatje;
@@ -744,7 +744,7 @@ void zoom(object o, MouseEventArgs e) //zoom in/uit als je scrollt
 {
     double dmoveX = 0;
     double dmoveY = 0;
-    
+
     if (e.Delta > 0)
     {
         scale *= 0.5;
@@ -758,7 +758,7 @@ void zoom(object o, MouseEventArgs e) //zoom in/uit als je scrollt
         dmoveY = center.Y - (center.Y - e.Location.Y) * 0.5;
     }
 
-    center = new Point((int) dmoveX,(int) dmoveY);
+    center = new Point((int)dmoveX, (int)dmoveY);
 
     scherm.Invalidate();
 }
@@ -774,7 +774,7 @@ void mouse_down_drag(object o, MouseEventArgs e) //bewaart de locatie waar je kl
 }
 
 
-void mouse_up_drag(object o,MouseEventArgs e)   //verandert center, gebaseert op het verschil
+void mouse_up_drag(object o, MouseEventArgs e)   //verandert center, gebaseert op het verschil
 {                                               //tussen de locatie waar je klikt en waar je loslaat
     if (mouse_down_bool)
     {
@@ -791,8 +791,8 @@ void teken(object o, PaintEventArgs e)
     depth.Text = n.ToString();
     scale_in.Text = scale.ToString("E4");
     center_x.Text = ((0.5 * scherm.Width - center.X) * scale).ToString("F4");
-    center_y.Text = ((0.5 * (scherm.Height-52) - center.Y) * scale).ToString("F4");
-    e.Graphics.DrawImage(plaatje(),200,0);
+    center_y.Text = ((0.5 * (scherm.Height - 52) - center.Y) * scale).ToString("F4");
+    e.Graphics.DrawImage(plaatje(), 200, 0);
 }
 
 
@@ -803,12 +803,12 @@ void bereken(object o, EventArgs e)
         n = double.Parse(depth.Text);
         colors = gen_palette(inrclr, outrclr);
         scale = double.Parse(scale_in.Text);
-        center = new Point((int)(0.5 * scherm.Width - double.Parse(center_x.Text)/scale),(int)(0.5 * (scherm.Height - 52) - double.Parse(center_y.Text)/scale));
+        center = new Point((int)(0.5 * scherm.Width - double.Parse(center_x.Text) / scale), (int)(0.5 * (scherm.Height - 52) - double.Parse(center_y.Text) / scale));
         scherm.Invalidate();
     }
     catch (Exception ex)
     {
-        DialogResult result = MessageBox.Show(ex.Message, "Er is iets fout gegaan.",  MessageBoxButtons.OK);
+        DialogResult result = MessageBox.Show(ex.Message, "Er is iets fout gegaan.", MessageBoxButtons.OK);
     }
 }
 
@@ -823,7 +823,7 @@ void verander_kleur(object o, EventArgs e)
         labInnerColor.BackColor = inrclr;
     }
     else
-    { 
+    {
         outrclr = dlg.Color;
         labOuterColor.BackColor = outrclr;
     }
@@ -839,7 +839,7 @@ void ColorControls()
         scherm.Controls.Remove(ColorNSmooth);
         scherm.Controls.Add(ColorSmooth);
     }
-    else 
+    else
     {
         scherm.Controls.Remove(ColorSmooth);
         scherm.Controls.Add(ColorNSmooth);
@@ -857,8 +857,8 @@ void punt(object o, EventArgs e)
 {
     if (plaatjes.SelectedIndex == 0)
     {
-        center.X = (scherm.ClientSize.Width-200) / 2;
-        center.Y = scherm.ClientSize.Height  / 2;
+        center.X = (scherm.ClientSize.Width - 200) / 2;
+        center.Y = scherm.ClientSize.Height / 2;
         scale = 0.01;
         n = 100;
         scherm.Invalidate();
