@@ -83,7 +83,7 @@ Color outrclr = Color.White;
 List<Color> colors = gen_palette(inrclr, outrclr);
 
 GenControls();
-void GenControls()
+void GenControls() //adds the controls to the screen (or panel) and gives them a position, size, etc.
 {//***LABELS***
     //label for x coord
     scherm.Controls.Add(labx);
@@ -100,11 +100,11 @@ void GenControls()
     labscale.Location = new Point(6, 30);
     labscale.Size = new Size(41, 20);
     labscale.Text = "schaal:";
-    //label for displaying inner color
+    //label for displaying inner color will be added to panel
     labInnerColor.Location = new Point(80, 0);
     labInnerColor.Size = new Size(20, 20);
     labInnerColor.BackColor = inrclr;
-    //label for displaying outer color
+    //label for displaying outer color will be added to panel
     labOuterColor.Location = new Point(80, 20);
     labOuterColor.Size = new Size(20, 20);
     labOuterColor.BackColor = outrclr;
@@ -149,23 +149,24 @@ void GenControls()
     knop.Size = new Size(106, 40);
     knop.Text = "bereken";
     knop.BackColor = Color.Green;
-    //button for selecting the inner color
+    //button for selecting the inner color will be added to panel
     innercolor.Location = new Point(0, 0);
     innercolor.Size = new Size(80, 20);
     innercolor.Text = "kleur 1";
-    //button for selecting outer color
+    //button for selecting outer color will be added to panel
     outercolor.Location = new Point(0, 20);
     outercolor.Size = new Size(80, 20);
     outercolor.Text = "kleur 2";
 
-    //panels for grouping together color controls
-    //inner color controls
+    //panels for grouping together color controls so we can display the smooth color controls OR the not smooth(NSmooth) color controls
+    //NSmooth controls
     ColorNSmooth.Controls.Add(innercolor);
     ColorNSmooth.Controls.Add(labInnerColor);
     ColorNSmooth.Controls.Add(outercolor);
     ColorNSmooth.Controls.Add(labOuterColor);
     ColorNSmooth.Bounds = new Rectangle(new Point(6, 110), new Size(194, 60));
-    //outer color controls
+
+    //Smooth controls (is default so we add to scherm.controls)
     scherm.Controls.Add(ColorSmooth);
     ColorSmooth.Bounds = new Rectangle(new Point(0, 110), new Size(200, 290));
     ColorSmooth.Controls.Add(kleur);
@@ -193,31 +194,31 @@ void GenControls()
     ColorSmooth.Controls.Add(Color1);
     Color1.Location = new Point(10, 80);
     Color1.Size = new Size(50, 30);
-    Color1.Text = "Color1";
+    Color1.Text = "Color 1";
     ColorSmooth.Controls.Add(Color2);
     Color2.Location = new Point(10, 110);
     Color2.Size = new Size(50, 30);
-    Color2.Text = "Color2";
+    Color2.Text = "Color 2";
     ColorSmooth.Controls.Add(Color3);
     Color3.Location = new Point(10, 140);
     Color3.Size = new Size(50, 30);
-    Color3.Text = "Color3";
+    Color3.Text = "Color 3";
     ColorSmooth.Controls.Add(Color4);
     Color4.Location = new Point(10, 170);
     Color4.Size = new Size(50, 30);
-    Color4.Text = "Color4";
+    Color4.Text = "Color 4";
     ColorSmooth.Controls.Add(Color5);
     Color5.Location = new Point(10, 200);
     Color5.Size = new Size(50, 30);
-    Color5.Text = "Color5";
+    Color5.Text = "Color 5";
     ColorSmooth.Controls.Add(Color6);
     Color6.Location = new Point(10, 230);
     Color6.Size = new Size(50, 30);
-    Color6.Text = "Color6";
+    Color6.Text = "Color 6";
     ColorSmooth.Controls.Add(Color7);
-    Color7.Location = new Point(10, 360);
+    Color7.Location = new Point(10, 260);
     Color7.Size = new Size(50, 30);
-    Color7.Text = "Color7";
+    Color7.Text = "Color 7";
     //21Color buttons
     ColorSmooth.Controls.Add(br1);
     br1.Location = new Point(66, 74);
@@ -284,7 +285,6 @@ void GenControls()
     bb7.Size = new Size(40, 30);
 
 
-
     //Chechbox for turning on smoothening
     scherm.Controls.Add(smoothening);
     smoothening.Location = new Point(186, 70);
@@ -303,8 +303,7 @@ void GenControls()
 }
 
 
-
-List<Color> gen_palette(Color zero, Color outer)//create color palatte
+List<Color> gen_palette(Color zero, Color outer)//creates color palette 
 {
     List<Color> colors = new List<Color>();
     for (double i = 0; i <= n; i++)
@@ -337,7 +336,7 @@ int MandelNum(double x, double y) //checkt voor elk input punt wat het mandel ge
     return i;
 }
 
-void ChangeColor(object o, EventArgs e)
+void ChangeColor(object o, EventArgs e) //when a color control button is pressed it changes the appropriate value
 {
     
     if (o == br1)
@@ -394,8 +393,7 @@ s33 = true;
 s36 = true;
 
 
-// giga colour mixer, the "s"-values switch a previous value or keep it the same, the "f128n"-value's are true when the r, g or b from the previous step was at 128 with false representing the previous value being 0. 
-Color SmoothClr(double x, double y)
+Color SmoothClr(double x, double y)     //given a coordinate as input, it will output the color associated with that input
 {
     x = ((x - center.X) * scale); y = ((y - center.Y) * scale);
     double a = 0; double b = 0;
@@ -412,17 +410,17 @@ Color SmoothClr(double x, double y)
         b_sq = b * b;
         t = (a_sq + b_sq);
         i++;
-        if (t >= 4)
+        if (t >= 4) //if it would escape on next iteration, it sets m to the decimal value of mandelnumber
         {
             m = i + ((4.0 - l) / (t - l));
             break;
         }
         l = t;
     }
-
-
-
-
+    // Giga colour mixer, the "s"-values switch a previous r,g or b value if true, from (128 to 0) or (0 to 128)
+    //meaning you get a smooth transition between 8 colors.
+    // The "f128n"-value's are true when the r, g or b from the previous step was at 128 with false representing the previous value being 0
+    //which is used in the switching process.
     if (m < n * 0.125) //first 1/8 total-----------------
     {
         double r1, g1, b1;
@@ -909,21 +907,21 @@ Color SmoothClr(double x, double y)
 }
 
 
-Bitmap plaatje() //maakt bitmap
+Bitmap plaatje() //maakt bitmap die we later op graphics zetten
 {
     Bitmap plaatje = new Bitmap(scherm.ClientSize.Width - 200, scherm.ClientSize.Height);
-    if (smoothening.CheckState == (CheckState)1)
+    if (smoothening.CheckState == (CheckState)1) //als smooth coloring aan staat
     {
         for (double i = 0; i < scherm.ClientSize.Width - 200; i++)
             for (double j = 0; j < scherm.ClientSize.Height; j++)
-                plaatje.SetPixel((int)i, (int)j, SmoothClr(i, j));
+                plaatje.SetPixel((int)i, (int)j, SmoothClr(i, j)); //gebruik smooth coloring
         return plaatje;
     }
     else
     {
         for (double i = 0; i < scherm.ClientSize.Width - 200; i++)
             for (double j = 0; j < scherm.ClientSize.Height; j++)
-                plaatje.SetPixel((int)i, (int)j, colors[MandelNum(i, j)]);
+                plaatje.SetPixel((int)i, (int)j, colors[MandelNum(i, j)]); //gebruik not smooth coloring
         return plaatje;
     }
 }
@@ -955,7 +953,7 @@ void zoom(object o, MouseEventArgs e) //zoom in/uit als je scrollt
 
 void mouse_down_drag(object o, MouseEventArgs e) //bewaart de locatie waar je klikt
 {
-    if (e.Location.X > 200)
+    if (e.Location.X > 200) //behalve als je op de controls klikt
     {
         mouse_down = e.Location;
         mouse_down_bool = true;
@@ -974,10 +972,10 @@ void mouse_up_drag(object o, MouseEventArgs e)   //verandert center, gebaseert o
 }
 
 
-void teken(object o, PaintEventArgs e)
-{
-    ColorControls();
-    depth.Text = n.ToString();
+void teken(object o, PaintEventArgs e)  //paint event handler
+{                                       
+    ColorControls();    //update ook de kleur controls die we moeten laten zien
+    depth.Text = n.ToString();  //zorgt ervoor dat de text die in de boxes staat altijk gelijk is aan de waarde waarmee de bereken is gedaan
     scale_in.Text = scale.ToString("E4");
     center_x.Text = ((0.5 * scherm.Width - center.X) * scale).ToString("F4");
     center_y.Text = ((0.5 * (scherm.Height - 52) - center.Y) * scale).ToString("F4");
@@ -985,7 +983,7 @@ void teken(object o, PaintEventArgs e)
 }
 
 
-void bereken(object o, EventArgs e)
+void bereken(object o, EventArgs e) //als je op de bereken knop klikt past hij de waardes aan
 {
     try
     {
@@ -995,14 +993,14 @@ void bereken(object o, EventArgs e)
         center = new Point((int)(0.5 * scherm.Width - double.Parse(center_x.Text) / scale), (int)(0.5 * (scherm.Height - 52) - double.Parse(center_y.Text) / scale));
         scherm.Invalidate();
     }
-    catch (Exception ex)
+    catch (Exception ex) //als er iets misgaat geeft hij een pop up
     {
         DialogResult result = MessageBox.Show(ex.Message, "Er is iets fout gegaan.", MessageBoxButtons.OK);
     }
 }
 
 
-void verander_kleur(object o, EventArgs e)
+void verander_kleur(object o, EventArgs e) //als er op de kleur controls wordt geklikt komt er een color dialog
 {
     ColorDialog dlg = new ColorDialog();
     dlg.ShowDialog();
@@ -1016,12 +1014,12 @@ void verander_kleur(object o, EventArgs e)
         outrclr = dlg.Color;
         labOuterColor.BackColor = outrclr;
     }
-    colors = gen_palette(inrclr, outrclr);
+    colors = gen_palette(inrclr, outrclr); //maakt nieuw palet gebaseerd op selectie
     scherm.Invalidate();
 }
 
 
-void ColorControls()
+void ColorControls() //kiest de juiste controls om te laten zien
 {
     if (smoothening.CheckState == (CheckState)1)
     {
@@ -1042,7 +1040,7 @@ void redraw(object o, EventArgs e)
 }
 
 
-void punt(object o, EventArgs e)
+void punt(object o, EventArgs e) //als er een nieuw opgeslagen punt wordt geselecteerd veranderen we de waardes
 {
     if (plaatjes.SelectedIndex == 0)
     {
@@ -1087,7 +1085,7 @@ void punt(object o, EventArgs e)
 }
 
 
-void SmoothKleur(object o, EventArgs e)
+void SmoothKleur(object o, EventArgs e) //kleur presets
 {
     if (plaatjes.SelectedIndex == 0)
     {
